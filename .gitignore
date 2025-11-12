@@ -3,8 +3,8 @@ Cargo.lock
 .env
 .env.*
 !.env.example
-.keystone/
-.keystone-rollback
+.birch/
+.birch-rollback
 *.swp
 *.swo
 *~

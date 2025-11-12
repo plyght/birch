@@ -1,7 +1,7 @@
 .PHONY: build test clean install docker help
 
 help:
-	@echo "Keystone - Secret Rotation Tool"
+	@echo "Birch - Secret Rotation Tool"
 	@echo ""
 	@echo "Available targets:"
 	@echo "  build      - Build debug binary"
@@ -28,11 +28,11 @@ clean:
 	rm -rf dist/
 
 install: release
-	sudo cp target/release/keystone /usr/local/bin/
-	@echo "✅ Installed to /usr/local/bin/keystone"
+	sudo cp target/release/birch /usr/local/bin/
+	@echo "✅ Installed to /usr/local/bin/birch"
 
 docker:
-	docker build -t keystone:latest .
+	docker build -t birch:latest .
 
 dist:
 	./build.sh
@@ -44,5 +44,5 @@ lint:
 	cargo clippy -- -D warnings
 
 dev: build
-	./target/debug/keystone --help
+	./target/debug/birch --help
 

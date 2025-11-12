@@ -22,7 +22,7 @@ Use this checklist for routine, scheduled secret rotations.
 1. **Dry-Run First**
 
 ```bash
-keystone rotate <SECRET_NAME> --env prod --service <SERVICE> --dry-run
+birch rotate <SECRET_NAME> --env prod --service <SERVICE> --dry-run
 ```
 
 - [ ] Review dry-run output
@@ -31,7 +31,7 @@ keystone rotate <SECRET_NAME> --env prod --service <SERVICE> --dry-run
 2. **Execute Rotation**
 
 ```bash
-keystone rotate <SECRET_NAME> --env prod --service <SERVICE>
+birch rotate <SECRET_NAME> --env prod --service <SERVICE>
 ```
 
 - [ ] Confirm when prompted
@@ -41,7 +41,7 @@ keystone rotate <SECRET_NAME> --env prod --service <SERVICE>
 3. **Optional: Trigger Redeploy**
 
 ```bash
-keystone rotate <SECRET_NAME> --env prod --service <SERVICE> --redeploy
+birch rotate <SECRET_NAME> --env prod --service <SERVICE> --redeploy
 ```
 
 - [ ] Monitor deployment progress
@@ -55,7 +55,7 @@ keystone rotate <SECRET_NAME> --env prod --service <SERVICE> --redeploy
 - [ ] Review audit log entry:
 
 ```bash
-keystone audit <SECRET_NAME> --env prod --last 1
+birch audit <SECRET_NAME> --env prod --last 1
 ```
 
 - [ ] Document completion in team tracking system
@@ -77,7 +77,7 @@ Use this checklist when a secret has been compromised and requires immediate rot
 2. **Rotate Immediately**
 
 ```bash
-keystone rotate <SECRET_NAME> --env prod --service <SERVICE> --redeploy
+birch rotate <SECRET_NAME> --env prod --service <SERVICE> --redeploy
 ```
 
 - [ ] Confirm when prompted
@@ -110,13 +110,13 @@ Use this checklist to set up and monitor app-signal-triggered rotations.
 1. **Start Daemon**
 
 ```bash
-keystone daemon start
+birch daemon start
 ```
 
 - [ ] Verify daemon is running:
 
 ```bash
-keystone daemon status
+birch daemon status
 ```
 
 2. **Configure Application**
@@ -145,13 +145,13 @@ async function handleRateLimit(secretName) {
 - [ ] Review daemon logs:
 
 ```bash
-tail -f ~/.keystone/daemon.log
+tail -f ~/.birch/daemon.log
 ```
 
 - [ ] Check for rotation signals in audit logs:
 
 ```bash
-keystone audit --last 10 | grep Signal
+birch audit --last 10 | grep Signal
 ```
 
 - [ ] Monitor cooldown behavior (signals should be debounced)
@@ -171,7 +171,7 @@ cp .env .env.backup
 2. **Rotate Secret**
 
 ```bash
-keystone rotate <SECRET_NAME> --env dev
+birch rotate <SECRET_NAME> --env dev
 ```
 
 - [ ] Verify secret in `.env` file:
@@ -180,7 +180,7 @@ keystone rotate <SECRET_NAME> --env dev
 grep <SECRET_NAME> .env
 ```
 
-- [ ] Note rollback file location: `.keystone-rollback`
+- [ ] Note rollback file location: `.birch-rollback`
 
 3. **Restart Application**
 
@@ -196,13 +196,13 @@ cargo run
 ### Rollback (if needed)
 
 ```bash
-keystone rollback <SECRET_NAME> --env dev
+birch rollback <SECRET_NAME> --env dev
 ```
 
 Or manually:
 
 ```bash
-cp .keystone-rollback .env
+cp .birch-rollback .env
 ```
 
 ## Multi-Environment Rotation
@@ -214,7 +214,7 @@ Use this checklist for rotating the same secret across multiple environments.
 1. **Start with Development**
 
 ```bash
-keystone rotate <SECRET_NAME> --env dev
+birch rotate <SECRET_NAME> --env dev
 ```
 
 - [ ] Test thoroughly in dev
@@ -223,7 +223,7 @@ keystone rotate <SECRET_NAME> --env dev
 2. **Move to Staging**
 
 ```bash
-keystone rotate <SECRET_NAME> --env staging --service <SERVICE>
+birch rotate <SECRET_NAME> --env staging --service <SERVICE>
 ```
 
 - [ ] Deploy to staging
@@ -233,7 +233,7 @@ keystone rotate <SECRET_NAME> --env staging --service <SERVICE>
 3. **Deploy to Production**
 
 ```bash
-keystone rotate <SECRET_NAME> --env prod --service <SERVICE> --redeploy
+birch rotate <SECRET_NAME> --env prod --service <SERVICE> --redeploy
 ```
 
 - [ ] Confirm when prompted
@@ -259,7 +259,7 @@ keystone rotate <SECRET_NAME> --env prod --service <SERVICE> --redeploy
 2. **Review Audit Logs**
 
 ```bash
-keystone audit <SECRET_NAME> --env <ENV> --last 5
+birch audit <SECRET_NAME> --env <ENV> --last 5
 ```
 
 3. **Check Provider Console**
@@ -272,7 +272,7 @@ keystone audit <SECRET_NAME> --env <ENV> --last 5
 If application is broken:
 
 ```bash
-keystone rollback <SECRET_NAME> --env <ENV> --service <SERVICE> --redeploy
+birch rollback <SECRET_NAME> --env <ENV> --service <SERVICE> --redeploy
 ```
 
 ### If Application Breaks After Rotation
@@ -290,7 +290,7 @@ keystone rollback <SECRET_NAME> --env <ENV> --service <SERVICE> --redeploy
 3. **Rollback Immediately**
 
 ```bash
-keystone rollback <SECRET_NAME> --env <ENV> --service <SERVICE> --redeploy
+birch rollback <SECRET_NAME> --env <ENV> --service <SERVICE> --redeploy
 ```
 
 4. **Investigate Root Cause**

@@ -18,8 +18,8 @@ pub struct Lock {
 
 impl Lock {
     pub fn new(env: &str, secret_name: &str) -> Result<Self> {
-        let keystone_dir = crate::config::Config::keystone_dir();
-        let locks_dir = keystone_dir.join("locks");
+        let birch_dir = crate::config::Config::birch_dir();
+        let locks_dir = birch_dir.join("locks");
         fs::create_dir_all(&locks_dir)?;
         
         let lock_file = format!("{}-{}.lock", env, secret_name);

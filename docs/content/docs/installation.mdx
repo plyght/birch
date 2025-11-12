@@ -1,55 +1,55 @@
 ---
 title: Installation
-description: Install Keystone on your system
+description: Install Birch on your system
 ---
 
-Keystone can be installed in multiple ways depending on your platform and preferences.
+Birch can be installed in multiple ways depending on your platform and preferences.
 
 ## From Source
 
 Build from source using Cargo:
 
 ```bash
-git clone https://github.com/plyght/keystone
-cd keystone
+git clone https://github.com/plyght/birch
+cd birch
 cargo build --release
-sudo cp target/release/keystone /usr/local/bin/
+sudo cp target/release/birch /usr/local/bin/
 ```
 
 ## Pre-built Binaries
 
-Download pre-built binaries from the [releases page](https://github.com/plyght/keystone/releases):
+Download pre-built binaries from the [releases page](https://github.com/plyght/birch/releases):
 
 ```bash
 # Linux
-wget https://github.com/plyght/keystone/releases/latest/download/keystone-linux-x86_64
-chmod +x keystone-linux-x86_64
-sudo mv keystone-linux-x86_64 /usr/local/bin/keystone
+wget https://github.com/plyght/birch/releases/latest/download/birch-linux-x86_64
+chmod +x birch-linux-x86_64
+sudo mv birch-linux-x86_64 /usr/local/bin/birch
 
 # macOS
-wget https://github.com/plyght/keystone/releases/latest/download/keystone-darwin-x86_64
-chmod +x keystone-darwin-x86_64
-sudo mv keystone-darwin-x86_64 /usr/local/bin/keystone
+wget https://github.com/plyght/birch/releases/latest/download/birch-darwin-x86_64
+chmod +x birch-darwin-x86_64
+sudo mv birch-darwin-x86_64 /usr/local/bin/birch
 
 # Windows
-# Download keystone-windows-x86_64.exe and add to PATH
+# Download birch-windows-x86_64.exe and add to PATH
 ```
 
 ## Docker
 
-Run Keystone in a container:
+Run Birch in a container:
 
 ```bash
-docker pull keystone:latest
+docker pull birch:latest
 
 # Run a command
-docker run --rm keystone:latest --help
+docker run --rm birch:latest --help
 
 # Run with environment variables
 docker run --rm \
   -e VERCEL_TOKEN=your-token \
   -e VERCEL_PROJECT_ID=your-project \
-  keystone:latest rotate MY_API_KEY --env prod --service vercel
+  birch:latest rotate MY_API_KEY --env prod --service vercel
 ```
 
 ## Using Make
@@ -64,11 +64,11 @@ make docker     # Build Docker image
 
 ## Verify Installation
 
-Check that Keystone is installed correctly:
+Check that Birch is installed correctly:
 
 ```bash
-keystone --version
-keystone --help
+birch --version
+birch --help
 ```
 
 You should see the version number and help text.

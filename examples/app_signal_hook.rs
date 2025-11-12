@@ -4,7 +4,7 @@ use std::time::Duration;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    println!("Keystone App-Signal Hook Example\n");
+    println!("Birch App-Signal Hook Example\n");
     
     let client = Client::builder()
         .timeout(Duration::from_secs(5))
@@ -15,7 +15,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let rate_limit_detected = true;
     
     if rate_limit_detected {
-        println!("Rate limit detected! Triggering secret rotation via Keystone daemon...\n");
+        println!("Rate limit detected! Triggering secret rotation via Birch daemon...\n");
         
         let response = client
             .post("http://127.0.0.1:9123/rotate")
@@ -35,7 +35,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         
         if status.is_success() {
             println!("\n✅ Rotation signal sent successfully!");
-            println!("Keystone daemon will process the rotation asynchronously.");
+            println!("Birch daemon will process the rotation asynchronously.");
         } else {
             println!("\n❌ Failed to send rotation signal.");
         }

@@ -72,8 +72,8 @@ pub async fn rotate(
 
 fn check_cooldown(env: &str, secret_name: &str) -> Result<()> {
     let config = crate::config::Config::load()?;
-    let keystone_dir = crate::config::Config::keystone_dir();
-    let cooldown_file = keystone_dir
+    let birch_dir = crate::config::Config::birch_dir();
+    let cooldown_file = birch_dir
         .join("cooldowns")
         .join(format!("{}-{}", env, secret_name));
     
@@ -100,8 +100,8 @@ fn check_cooldown(env: &str, secret_name: &str) -> Result<()> {
 }
 
 fn record_rotation(env: &str, secret_name: &str) -> Result<()> {
-    let keystone_dir = crate::config::Config::keystone_dir();
-    let cooldown_dir = keystone_dir.join("cooldowns");
+    let birch_dir = crate::config::Config::birch_dir();
+    let cooldown_dir = birch_dir.join("cooldowns");
     fs::create_dir_all(&cooldown_dir)?;
     
     let cooldown_file = cooldown_dir.join(format!("{}-{}", env, secret_name));

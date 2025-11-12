@@ -1,20 +1,20 @@
 ---
 title: Configuration
-description: Configure Keystone for your environment
+description: Configure Birch for your environment
 ---
 
-Keystone uses a TOML configuration file with environment variable overrides for flexibility.
+Birch uses a TOML configuration file with environment variable overrides for flexibility.
 
 ## Configuration File
 
-The default configuration file is located at `~/.keystone/config.toml`.
+The default configuration file is located at `~/.birch/config.toml`.
 
 ### Initialize
 
 Create the default configuration:
 
 ```bash
-keystone config init
+birch config init
 ```
 
 ### View Current Configuration
@@ -22,7 +22,7 @@ keystone config init
 Display the active configuration:
 
 ```bash
-keystone config show
+birch config show
 ```
 
 ## Configuration Options
@@ -31,7 +31,7 @@ keystone config show
 
 ```toml
 # Where to store audit logs
-audit_log_path = "/Users/you/.keystone/logs"
+audit_log_path = "/Users/you/.birch/logs"
 
 # Minimum time between rotations (seconds)
 cooldown_seconds = 60
@@ -86,10 +86,10 @@ Environment variables take precedence over config file settings:
 ### Core Settings
 
 ```bash
-export KEYSTONE_AUDIT_LOG_PATH="/var/log/keystone"
-export KEYSTONE_COOLDOWN_SECONDS=30
-export KEYSTONE_ROLLBACK_WINDOW_SECONDS=7200
-export KEYSTONE_DAEMON_BIND="0.0.0.0:9123"
+export BIRCH_AUDIT_LOG_PATH="/var/log/birch"
+export BIRCH_COOLDOWN_SECONDS=30
+export BIRCH_ROLLBACK_WINDOW_SECONDS=7200
+export BIRCH_DAEMON_BIND="0.0.0.0:9123"
 ```
 
 ### Vercel
@@ -157,7 +157,7 @@ export AZURE_VAULT_NAME="your-vault"
 Settings are applied in this order (later overrides earlier):
 
 1. Default values
-2. Config file (`~/.keystone/config.toml`)
+2. Config file (`~/.birch/config.toml`)
 3. Environment variables
 
 ## Custom Config Path
@@ -165,16 +165,16 @@ Settings are applied in this order (later overrides earlier):
 Override the config file location:
 
 ```bash
-export KEYSTONE_CONFIG_PATH="/path/to/custom/config.toml"
-keystone config show
+export BIRCH_CONFIG_PATH="/path/to/custom/config.toml"
+birch config show
 ```
 
 ## Security Best Practices
 
 - **Never commit credentials** to version control
 - **Use environment variables** in CI/CD pipelines
-- **Restrict config file permissions**: `chmod 600 ~/.keystone/config.toml`
-- **Rotate Keystone's own credentials** regularly
+- **Restrict config file permissions**: `chmod 600 ~/.birch/config.toml`
+- **Rotate Birch's own credentials** regularly
 - **Use different credentials** per environment
 
 ## Next Steps

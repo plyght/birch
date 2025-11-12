@@ -38,10 +38,10 @@ pub struct AuditLogger {
 impl AuditLogger {
     pub fn new() -> Result<Self> {
         let config = crate::config::Config::load()?;
-        let keystone_dir = crate::config::Config::keystone_dir();
-        let signing_key_path = keystone_dir.join("signing-key");
+        let birch_dir = crate::config::Config::birch_dir();
+        let signing_key_path = birch_dir.join("signing-key");
         
-        fs::create_dir_all(&keystone_dir)?;
+        fs::create_dir_all(&birch_dir)?;
         fs::create_dir_all(&config.audit_log_path)?;
         
         let (signing_key, verifying_key) = if signing_key_path.exists() {
@@ -99,7 +99,7 @@ impl AuditLogger {
         entry_with_sig.signature = hex::encode(signature.to_bytes());
         
         let log_file = self.log_path.join(format!(
-            "keystone-{}.log",
+            "birch-{}.log",
             Utc::now().format("%Y-%m-%d")
         ));
         

@@ -50,7 +50,7 @@ pub struct MaintenanceWindow {
 fn default_audit_log_path() -> PathBuf {
     dirs::home_dir()
         .unwrap_or_else(|| PathBuf::from("."))
-        .join(".keystone")
+        .join(".birch")
         .join("logs")
 }
 
@@ -111,40 +111,40 @@ impl Config {
     }
     
     pub fn config_path() -> PathBuf {
-        std::env::var("KEYSTONE_CONFIG_PATH")
+        std::env::var("BIRCH_CONFIG_PATH")
             .map(PathBuf::from)
             .unwrap_or_else(|_| {
                 dirs::home_dir()
                     .unwrap_or_else(|| PathBuf::from("."))
-                    .join(".keystone")
+                    .join(".birch")
                     .join("config.toml")
             })
     }
     
-    pub fn keystone_dir() -> PathBuf {
+    pub fn birch_dir() -> PathBuf {
         dirs::home_dir()
             .unwrap_or_else(|| PathBuf::from("."))
-            .join(".keystone")
+            .join(".birch")
     }
     
     fn apply_env_overrides(&mut self) {
-        if let Ok(path) = std::env::var("KEYSTONE_AUDIT_LOG_PATH") {
+        if let Ok(path) = std::env::var("BIRCH_AUDIT_LOG_PATH") {
             self.audit_log_path = PathBuf::from(path);
         }
         
-        if let Ok(val) = std::env::var("KEYSTONE_COOLDOWN_SECONDS") {
+        if let Ok(val) = std::env::var("BIRCH_COOLDOWN_SECONDS") {
             if let Ok(seconds) = val.parse() {
                 self.cooldown_seconds = seconds;
             }
         }
         
-        if let Ok(val) = std::env::var("KEYSTONE_ROLLBACK_WINDOW_SECONDS") {
+        if let Ok(val) = std::env::var("BIRCH_ROLLBACK_WINDOW_SECONDS") {
             if let Ok(seconds) = val.parse() {
                 self.rollback_window_seconds = seconds;
             }
         }
         
-        if let Ok(val) = std::env::var("KEYSTONE_DAEMON_BIND") {
+        if let Ok(val) = std::env::var("BIRCH_DAEMON_BIND") {
             self.daemon_bind = val;
         }
         

@@ -2,8 +2,8 @@ use anyhow::Result;
 use clap::{Parser, Subcommand};
 
 #[derive(Parser)]
-#[command(name = "keystone")]
-#[command(about = "Lease. Rotate. Prove. - Secret rotation for local .env and production hosts")]
+#[command(name = "birch")]
+#[command(about = "Peel. Rotate. Renew. - Secret rotation for local .env and production hosts")]
 #[command(version)]
 pub struct Cli {
     #[command(subcommand)]

@@ -1,9 +1,9 @@
 ---
 title: Operator Runbook
-description: Production deployment, monitoring, and troubleshooting for Keystone
+description: Production deployment, monitoring, and troubleshooting for Birch
 ---
 
-This runbook covers production deployment, monitoring, and troubleshooting for Keystone.
+This runbook covers production deployment, monitoring, and troubleshooting for Birch.
 
 ## Production Deployment
 
@@ -18,18 +18,18 @@ This runbook covers production deployment, monitoring, and troubleshooting for K
 #### Option 1: Build from Source
 
 ```bash
-git clone https://github.com/plyght/keystone
-cd keystone
+git clone https://github.com/plyght/birch
+cd birch
 cargo build --release
-sudo cp target/release/keystone /usr/local/bin/
+sudo cp target/release/birch /usr/local/bin/
 ```
 
 #### Option 2: Download Pre-built Binary
 
 ```bash
-wget https://github.com/plyght/keystone/releases/latest/download/keystone-linux-x86_64
-chmod +x keystone-linux-x86_64
-sudo mv keystone-linux-x86_64 /usr/local/bin/keystone
+wget https://github.com/plyght/birch/releases/latest/download/birch-linux-x86_64
+chmod +x birch-linux-x86_64
+sudo mv birch-linux-x86_64 /usr/local/bin/birch
 ```
 
 ### Initial Configuration
@@ -37,13 +37,13 @@ sudo mv keystone-linux-x86_64 /usr/local/bin/keystone
 1. Initialize configuration:
 
 ```bash
-keystone config init
+birch config init
 ```
 
-2. Edit `~/.keystone/config.toml`:
+2. Edit `~/.birch/config.toml`:
 
 ```toml
-audit_log_path = "/var/log/keystone"
+audit_log_path = "/var/log/birch"
 cooldown_seconds = 60
 rollback_window_seconds = 3600
 daemon_bind = "127.0.0.1:9123"
@@ -64,25 +64,25 @@ export VERCEL_PROJECT_ID="..."
 4. Test configuration:
 
 ```bash
-keystone config show
+birch config show
 ```
 
 ### Daemon Setup
 
 For production app-signal rotation, run the daemon as a systemd service:
 
-1. Create `/etc/systemd/system/keystone.service`:
+1. Create `/etc/systemd/system/birch.service`:
 
 ```ini
 [Unit]
-Description=Keystone Secret Rotation Daemon
+Description=Birch Secret Rotation Daemon
 After=network.target
 
 [Service]
 Type=simple
-User=keystone
-Group=keystone
-ExecStart=/usr/local/bin/keystone daemon-internal-run --bind 127.0.0.1:9123
+User=birch
+Group=birch
+ExecStart=/usr/local/bin/birch daemon-internal-run --bind 127.0.0.1:9123
 Restart=on-failure
 RestartSec=10
 StandardOutput=journal
@@ -99,9 +99,9 @@ WantedBy=multi-user.target
 
 ```bash
 sudo systemctl daemon-reload
-sudo systemctl enable keystone
-sudo systemctl start keystone
-sudo systemctl status keystone
+sudo systemctl enable birch
+sudo systemctl start birch
+sudo systemctl status birch
 ```
 
 ## Monitoring
@@ -111,7 +111,7 @@ sudo systemctl status keystone
 Check daemon status:
 
 ```bash
-keystone daemon status
+birch daemon status
 ```
 
 Or via HTTP:
@@ -127,13 +127,13 @@ Expected response: `OK` with status 200.
 Review recent rotations:
 
 ```bash
-keystone audit --last 10
+birch audit --last 10
 ```
 
 Filter by secret and environment:
 
 ```bash
-keystone audit MY_API_KEY --env prod
+birch audit MY_API_KEY --env prod
 ```
 
 ### Lock Status
@@ -141,7 +141,7 @@ keystone audit MY_API_KEY --env prod
 Check for stale locks:
 
 ```bash
-ls -la ~/.keystone/locks/
+ls -la ~/.birch/locks/
 ```
 
 Locks older than 5 minutes are automatically removed.
@@ -151,13 +151,13 @@ Locks older than 5 minutes are automatically removed.
 View systemd logs:
 
 ```bash
-sudo journalctl -u keystone -f
+sudo journalctl -u birch -f
 ```
 
 Or check the daemon log file:
 
 ```bash
-tail -f ~/.keystone/daemon.log
+tail -f ~/.birch/daemon.log
 ```
 
 ## Troubleshooting
@@ -181,7 +181,7 @@ ps aux | grep <PID>
 3. To force-remove a stale lock:
 
 ```bash
-rm ~/.keystone/locks/<env>-<secret_name>.lock
+rm ~/.birch/locks/<env>-<secret_name>.lock
 ```
 
 ### Issue: "Cooldown active"
@@ -202,7 +202,7 @@ cooldown_seconds = 30
 3. Or override via environment:
 
 ```bash
-KEYSTONE_COOLDOWN_SECONDS=30 keystone rotate ...
+BIRCH_COOLDOWN_SECONDS=30 birch rotate ...
 ```
 
 ### Issue: Provider API Errors
@@ -228,12 +228,12 @@ env | grep VERCEL_PROJECT_ID
 4. Test with dry-run:
 
 ```bash
-keystone rotate MY_API_KEY --env prod --service vercel --dry-run
+birch rotate MY_API_KEY --env prod --service vercel --dry-run
 ```
 
 ### Issue: Daemon Won't Start
 
-**Symptom**: `keystone daemon start` fails
+**Symptom**: `birch daemon start` fails
 
 **Resolution**:
 
@@ -246,14 +246,14 @@ lsof -i :9123
 2. Check for stale PID file:
 
 ```bash
-cat ~/.keystone/daemon.pid
+cat ~/.birch/daemon.pid
 ps aux | grep <PID>
 ```
 
 3. Remove stale PID:
 
 ```bash
-rm ~/.keystone/daemon.pid
+rm ~/.birch/daemon.pid
 ```
 
 4. Check daemon logs for errors
@@ -279,10 +279,10 @@ rollback_window_seconds = 7200
 
 Audit logs grow over time. Set up log rotation:
 
-1. Create `/etc/logrotate.d/keystone`:
+1. Create `/etc/logrotate.d/birch`:
 
 ```
-/var/log/keystone/*.log {
+/var/log/birch/*.log {
     daily
     rotate 90
     compress
@@ -295,7 +295,7 @@ Audit logs grow over time. Set up log rotation:
 2. Test:
 
 ```bash
-sudo logrotate -d /etc/logrotate.d/keystone
+sudo logrotate -d /etc/logrotate.d/birch
 ```
 
 ### Backup Audit Logs
@@ -303,28 +303,28 @@ sudo logrotate -d /etc/logrotate.d/keystone
 Audit logs contain signed metadata but no plaintext secrets. Back them up regularly:
 
 ```bash
-rsync -av ~/.keystone/logs/ backup-server:/keystone-audit-logs/
+rsync -av ~/.birch/logs/ backup-server:/birch-audit-logs/
 ```
 
-### Update Keystone
+### Update Birch
 
 1. Download new binary or rebuild from source
 2. Stop daemon:
 
 ```bash
-sudo systemctl stop keystone
+sudo systemctl stop birch
 ```
 
 3. Replace binary:
 
 ```bash
-sudo cp keystone /usr/local/bin/
+sudo cp birch /usr/local/bin/
 ```
 
 4. Restart daemon:
 
 ```bash
-sudo systemctl start keystone
+sudo systemctl start birch
 ```
 
 ## Performance
@@ -337,7 +337,7 @@ sudo systemctl start keystone
 
 ### Scaling Considerations
 
-- Keystone is designed for manual and scheduled rotations, not high-frequency automation
+- Birch is designed for manual and scheduled rotations, not high-frequency automation
 - Cooldown prevents thrash (default: 60 seconds)
 - File-based locking is sufficient for single-node deployments
 - For multi-node setups, use a shared filesystem or distributed locking (not yet implemented)
@@ -348,7 +348,7 @@ sudo systemctl start keystone
 
 - Never store plaintext credentials in config files
 - Use environment variables or external secret managers
-- Rotate Keystone's own provider tokens regularly
+- Rotate Birch's own provider tokens regularly
 
 ### Audit Log Integrity
 
@@ -356,14 +356,14 @@ sudo systemctl start keystone
 - Verify signatures:
 
 ```bash
-keystone audit MY_API_KEY --env prod
+birch audit MY_API_KEY --env prod
 ```
 
 Look for "✓ valid" signature indicators.
 
 ### Access Control
 
-- Restrict access to `~/.keystone/` directory
+- Restrict access to `~/.birch/` directory
 - Limit daemon bind address to localhost
 - Use firewall rules to block external access to daemon port
 

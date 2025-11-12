@@ -54,19 +54,19 @@ export VERCEL_PROJECT_ID="your-project-id"
 ### Rotate a Secret
 
 ```bash
-keystone rotate MY_API_KEY --env prod --service vercel
+birch rotate MY_API_KEY --env prod --service vercel
 ```
 
 ### With Automatic Redeploy
 
 ```bash
-keystone rotate MY_API_KEY --env prod --service vercel --redeploy
+birch rotate MY_API_KEY --env prod --service vercel --redeploy
 ```
 
 ### Dry Run
 
 ```bash
-keystone rotate MY_API_KEY --env prod --service vercel --dry-run
+birch rotate MY_API_KEY --env prod --service vercel --dry-run
 ```
 
 ## Features
@@ -80,7 +80,7 @@ keystone rotate MY_API_KEY --env prod --service vercel --dry-run
 
 ## Environment Targeting
 
-Keystone updates secrets for the **production** environment by default.
+Birch updates secrets for the **production** environment by default.
 
 To target different environments, modify the connector implementation or use Vercel's environment-specific secrets.
 

@@ -5,7 +5,7 @@ description: Provider integrations for secret rotation
 
 import { Card, Cards } from 'fumadocs-ui/components/card';
 
-Keystone supports multiple hosting providers and cloud secret managers through its connector architecture.
+Birch supports multiple hosting providers and cloud secret managers through its connector architecture.
 
 ## Hosting Providers
 
@@ -30,7 +30,7 @@ Keystone supports multiple hosting providers and cloud secret managers through i
 All connectors require authentication credentials. You can provide them via:
 
 1. **Environment variables** (recommended for CI/CD)
-2. **Configuration file** (`~/.keystone/config.toml`)
+2. **Configuration file** (`~/.birch/config.toml`)
 
 ### Environment Variables
 
@@ -56,13 +56,13 @@ All connectors follow the same usage pattern:
 
 ```bash
 # Rotate a secret
-keystone rotate SECRET_NAME --env ENV --service PROVIDER
+birch rotate SECRET_NAME --env ENV --service PROVIDER
 
 # With redeploy
-keystone rotate SECRET_NAME --env ENV --service PROVIDER --redeploy
+birch rotate SECRET_NAME --env ENV --service PROVIDER --redeploy
 
 # Dry run first
-keystone rotate SECRET_NAME --env ENV --service PROVIDER --dry-run
+birch rotate SECRET_NAME --env ENV --service PROVIDER --dry-run
 ```
 
 ## Connector Status

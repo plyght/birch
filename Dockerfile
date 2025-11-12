@@ -21,12 +21,12 @@ RUN apt-get update && apt-get install -y \
     libssl3 \
     && rm -rf /var/lib/apt/lists/*
 
-COPY --from=builder /app/target/release/keystone /usr/local/bin/keystone
+COPY --from=builder /app/target/release/birch /usr/local/bin/birch
 
-RUN mkdir -p /root/.keystone/logs
+RUN mkdir -p /root/.birch/logs
 
 ENV RUST_LOG=info
 
-ENTRYPOINT ["keystone"]
+ENTRYPOINT ["birch"]
 CMD ["--help"]
 
