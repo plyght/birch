@@ -20,7 +20,7 @@ pub async fn update_env_file(
     let original_contents = fs::read_to_string(&env_path)
         .context("Failed to read .env file")?;
     
-    let rollback_path = PathBuf::from(".keystone-rollback");
+    let rollback_path = PathBuf::from(".birch-rollback");
     fs::write(&rollback_path, &original_contents)?;
     
     let mut new_contents = String::new();

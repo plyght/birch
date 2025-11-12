@@ -1,11 +1,11 @@
 ---
 title: Operators Guide
-description: Production operations and incident response for Keystone
+description: Production operations and incident response for Birch
 ---
 
 import { Card, Cards } from 'fumadocs-ui/components/card';
 
-Comprehensive guides for running Keystone in production environments.
+Comprehensive guides for running Birch in production environments.
 
 ## Documentation
 
@@ -19,17 +19,17 @@ Comprehensive guides for running Keystone in production environments.
 
 ### Daily Operations
 
-- Monitor daemon health: `keystone daemon status`
-- Check recent rotations: `keystone audit --last 10`
-- Review locks: `ls -la ~/.keystone/locks/`
+- Monitor daemon health: `birch daemon status`
+- Check recent rotations: `birch audit --last 10`
+- Review locks: `ls -la ~/.birch/locks/`
 
 ### Emergency Response
 
 For compromised secrets:
 
-1. Rotate immediately: `keystone rotate SECRET --env prod --service SERVICE`
+1. Rotate immediately: `birch rotate SECRET --env prod --service SERVICE`
 2. Revoke old key at provider
-3. Check audit logs: `keystone audit SECRET --env prod`
+3. Check audit logs: `birch audit SECRET --env prod`
 4. Document incident
 
 ### Monitoring
@@ -63,6 +63,6 @@ Common issues and resolutions:
 
 ## Support
 
-- GitHub Issues: [https://github.com/plyght/keystone/issues](https://github.com/plyght/keystone/issues)
-- Documentation: [https://docs.keystone.dev](https://docs.keystone.dev)
+- GitHub Issues: [https://github.com/plyght/birch/issues](https://github.com/plyght/birch/issues)
+- Documentation: [https://docs.birch.dev](https://docs.birch.dev)
 

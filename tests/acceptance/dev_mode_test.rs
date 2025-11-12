@@ -12,7 +12,7 @@ async fn test_dev_mode_env_update() {
     )
     .unwrap();
     
-    keystone::dev::update_env_file(
+    birch::dev::update_env_file(
         "API_KEY",
         "new_value",
         Some(env_path.to_str().unwrap()),
@@ -25,7 +25,7 @@ async fn test_dev_mode_env_update() {
     assert!(contents.contains("OTHER_VAR=unchanged"));
     assert!(contents.contains("# Test env file"));
     
-    let rollback_path = temp_dir.path().join(".keystone-rollback");
+    let rollback_path = temp_dir.path().join(".birch-rollback");
     assert!(rollback_path.exists());
     
     let rollback_contents = fs::read_to_string(&rollback_path).unwrap();
@@ -39,7 +39,7 @@ async fn test_dev_mode_new_secret() {
     
     fs::write(&env_path, "EXISTING_VAR=value\n").unwrap();
     
-    keystone::dev::update_env_file(
+    birch::dev::update_env_file(
         "NEW_SECRET",
         "secret_value",
         Some(env_path.to_str().unwrap()),
@@ -63,7 +63,7 @@ async fn test_dev_mode_preserves_formatting() {
     )
     .unwrap();
     
-    keystone::dev::update_env_file(
+    birch::dev::update_env_file(
         "API_KEY",
         "new",
         Some(env_path.to_str().unwrap()),

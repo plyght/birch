@@ -17,7 +17,7 @@ pub async fn start(bind: &str) -> Result<()> {
         }
     }
     
-    println!("🚀 Starting Keystone daemon on {}", bind);
+    println!("🚀 Starting Birch daemon on {}", bind);
     
     let exe = std::env::current_exe()?;
     let child = Command::new(exe)
@@ -103,7 +103,7 @@ pub async fn run_daemon(bind: String) -> Result<()> {
 }
 
 fn get_pid_file() -> std::path::PathBuf {
-    crate::config::Config::keystone_dir().join("daemon.pid")
+    crate::config::Config::birch_dir().join("daemon.pid")
 }
 
 fn is_process_running(pid: u32) -> bool {

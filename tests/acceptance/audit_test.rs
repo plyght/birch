@@ -1,4 +1,4 @@
-use keystone::audit::{AuditAction, AuditLogger};
+use birch::audit::{AuditAction, AuditLogger};
 use tempfile::TempDir;
 
 #[test]

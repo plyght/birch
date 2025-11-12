@@ -37,10 +37,10 @@ export NETLIFY_SITE_ID="your-site-id"
 
 ```bash
 # Rotate a secret
-keystone rotate MY_API_KEY --env prod --service netlify
+birch rotate MY_API_KEY --env prod --service netlify
 
 # With automatic build trigger
-keystone rotate MY_API_KEY --env prod --service netlify --redeploy
+birch rotate MY_API_KEY --env prod --service netlify --redeploy
 ```
 
 ## Features
@@ -53,7 +53,7 @@ keystone rotate MY_API_KEY --env prod --service netlify --redeploy
 
 ## Environment Contexts
 
-Netlify supports multiple environment contexts. By default, Keystone updates the **production** context.
+Netlify supports multiple environment contexts. By default, Birch updates the **production** context.
 
 ## Troubleshooting
 

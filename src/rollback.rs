@@ -72,8 +72,8 @@ fn check_rollback_window(
     secret_name: &str,
     window: Duration,
 ) -> Result<()> {
-    let keystone_dir = crate::config::Config::keystone_dir();
-    let cooldown_file = keystone_dir
+    let birch_dir = crate::config::Config::birch_dir();
+    let cooldown_file = birch_dir
         .join("cooldowns")
         .join(format!("{}-{}", env, secret_name));
     

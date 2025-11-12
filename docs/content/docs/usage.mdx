@@ -1,16 +1,16 @@
 ---
 title: Usage Guide
-description: Complete guide to using Keystone for secret rotation
+description: Complete guide to using Birch for secret rotation
 ---
 
-This guide covers all aspects of using Keystone for secret rotation in development and production.
+This guide covers all aspects of using Birch for secret rotation in development and production.
 
 ## Basic Commands
 
 ### Rotate a Secret
 
 ```bash
-keystone rotate SECRET_NAME --env ENV [--service SERVICE] [OPTIONS]
+birch rotate SECRET_NAME --env ENV [--service SERVICE] [OPTIONS]
 ```
 
 **Arguments:**
@@ -27,7 +27,7 @@ keystone rotate SECRET_NAME --env ENV [--service SERVICE] [OPTIONS]
 ### Rollback a Secret
 
 ```bash
-keystone rollback SECRET_NAME --env ENV [--service SERVICE] [OPTIONS]
+birch rollback SECRET_NAME --env ENV [--service SERVICE] [OPTIONS]
 ```
 
 **Options:**
@@ -36,15 +36,15 @@ keystone rollback SECRET_NAME --env ENV [--service SERVICE] [OPTIONS]
 ### Daemon Management
 
 ```bash
-keystone daemon start [--bind ADDRESS]
-keystone daemon stop
-keystone daemon status
+birch daemon start [--bind ADDRESS]
+birch daemon stop
+birch daemon status
 ```
 
 ### View Audit Logs
 
 ```bash
-keystone audit [SECRET_NAME] [OPTIONS]
+birch audit [SECRET_NAME] [OPTIONS]
 ```
 
 **Options:**
@@ -67,7 +67,7 @@ keystone audit [SECRET_NAME] [OPTIONS]
 Always test with dry-run first:
 
 ```bash
-keystone rotate MY_API_KEY --env prod --service vercel --dry-run
+birch rotate MY_API_KEY --env prod --service vercel --dry-run
 ```
 
 ### Cooldown Period
@@ -76,7 +76,7 @@ Prevents rapid successive rotations (default: 60 seconds):
 
 ```bash
 # Will fail if rotated recently
-keystone rotate MY_API_KEY --env prod --service vercel
+birch rotate MY_API_KEY --env prod --service vercel
 # Error: Cooldown active: wait 45s before rotating again
 ```
 
@@ -86,10 +86,10 @@ Prevents concurrent rotations of the same secret:
 
 ```bash
 # Terminal 1
-keystone rotate MY_API_KEY --env prod --service vercel
+birch rotate MY_API_KEY --env prod --service vercel
 
 # Terminal 2 (simultaneously)
-keystone rotate MY_API_KEY --env prod --service vercel
+birch rotate MY_API_KEY --env prod --service vercel
 # Error: Lock already held by PID 12345
 ```
 
@@ -111,7 +111,7 @@ Outside these windows, you'll be prompted to confirm.
 Production rotations always require explicit confirmation:
 
 ```bash
-keystone rotate MY_API_KEY --env prod --service vercel
+birch rotate MY_API_KEY --env prod --service vercel
 # Preview: New secret value: ***xyz
 # Update 'MY_API_KEY' in prod environment? (y/n): 
 ```
@@ -124,7 +124,7 @@ Use cron for periodic rotations:
 
 ```bash
 # Rotate weekly on Sunday at 3 AM
-0 3 * * 0 /usr/local/bin/keystone rotate MY_API_KEY --env prod --service vercel
+0 3 * * 0 /usr/local/bin/birch rotate MY_API_KEY --env prod --service vercel
 ```
 
 ### Multi-Environment Rotation
@@ -134,7 +134,7 @@ Rotate across all environments:
 ```bash
 #!/bin/bash
 for env in dev staging prod; do
-  keystone rotate MY_API_KEY --env $env --service vercel
+  birch rotate MY_API_KEY --env $env --service vercel
 done
 ```
 

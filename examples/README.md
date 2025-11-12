@@ -1,15 +1,15 @@
-# Keystone Examples
+# Birch Examples
 
 ## App Signal Hook
 
-This example demonstrates how to integrate Keystone with your application to trigger automatic secret rotation when rate limits are detected.
+This example demonstrates how to integrate Birch with your application to trigger automatic secret rotation when rate limits are detected.
 
 ### Running the Example
 
-1. Start the Keystone daemon:
+1. Start the Birch daemon:
 
 ```bash
-keystone daemon start
+birch daemon start
 ```
 
 2. Run the example:
@@ -149,7 +149,7 @@ Error (500 Internal Server Error):
 
 ### Best Practices
 
-1. **Debouncing**: Keystone automatically debounces signals using the configured cooldown period
+1. **Debouncing**: Birch automatically debounces signals using the configured cooldown period
 2. **Async Handling**: Rotation happens asynchronously; don't block on the response
 3. **Error Handling**: Log failures but don't crash the application
 4. **Monitoring**: Monitor rotation audit logs to track automatic rotations

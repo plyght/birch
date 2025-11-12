@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-echo "Building Keystone for multiple platforms..."
+echo "Building Birch for multiple platforms..."
 
 TARGETS=(
     "x86_64-apple-darwin"
@@ -22,9 +22,9 @@ for target in "${TARGETS[@]}"; do
     cargo build --release --target "$target"
     
     if [ "$target" = "x86_64-pc-windows-gnu" ]; then
-        cp "target/$target/release/keystone.exe" "dist/keystone-$target.exe"
+        cp "target/$target/release/birch.exe" "dist/birch-$target.exe"
     else
-        cp "target/$target/release/keystone" "dist/keystone-$target"
+        cp "target/$target/release/birch" "dist/birch-$target"
     fi
     
     echo "✅ Built for $target"
@@ -36,5 +36,5 @@ ls -lh dist/
 
 echo ""
 echo "To build the Docker image:"
-echo "  docker build -t keystone:latest ."
+echo "  docker build -t birch:latest ."
 

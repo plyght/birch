@@ -3,12 +3,12 @@ title: CLI Reference
 description: Complete command-line interface reference
 ---
 
-Complete reference for all Keystone CLI commands.
+Complete reference for all Birch CLI commands.
 
 ## Global Options
 
 ```bash
-keystone [OPTIONS] <COMMAND>
+birch [OPTIONS] <COMMAND>
 ```
 
 **Options:**
@@ -23,7 +23,7 @@ keystone [OPTIONS] <COMMAND>
 Rotate a secret in dev or production.
 
 ```bash
-keystone rotate [SECRET_NAME] [OPTIONS]
+birch rotate [SECRET_NAME] [OPTIONS]
 ```
 
 **Arguments:**
@@ -41,19 +41,19 @@ keystone rotate [SECRET_NAME] [OPTIONS]
 
 ```bash
 # Dev mode
-keystone rotate MY_API_KEY --env dev
+birch rotate MY_API_KEY --env dev
 
 # Production with Vercel
-keystone rotate MY_API_KEY --env prod --service vercel
+birch rotate MY_API_KEY --env prod --service vercel
 
 # With custom value
-keystone rotate MY_API_KEY --env prod --service vercel --value "my-secret-123"
+birch rotate MY_API_KEY --env prod --service vercel --value "my-secret-123"
 
 # Dry run
-keystone rotate MY_API_KEY --env prod --service vercel --dry-run
+birch rotate MY_API_KEY --env prod --service vercel --dry-run
 
 # With redeploy
-keystone rotate MY_API_KEY --env prod --service vercel --redeploy
+birch rotate MY_API_KEY --env prod --service vercel --redeploy
 ```
 
 ### rollback
@@ -61,7 +61,7 @@ keystone rotate MY_API_KEY --env prod --service vercel --redeploy
 Rollback a secret to its previous value.
 
 ```bash
-keystone rollback <SECRET_NAME> [OPTIONS]
+birch rollback <SECRET_NAME> [OPTIONS]
 ```
 
 **Arguments:**
@@ -76,13 +76,13 @@ keystone rollback <SECRET_NAME> [OPTIONS]
 
 ```bash
 # Dev mode
-keystone rollback MY_API_KEY --env dev
+birch rollback MY_API_KEY --env dev
 
 # Production
-keystone rollback MY_API_KEY --env prod --service vercel
+birch rollback MY_API_KEY --env prod --service vercel
 
 # With redeploy
-keystone rollback MY_API_KEY --env prod --service vercel --redeploy
+birch rollback MY_API_KEY --env prod --service vercel --redeploy
 ```
 
 ### daemon
@@ -90,7 +90,7 @@ keystone rollback MY_API_KEY --env prod --service vercel --redeploy
 Manage the background daemon for app-signal rotation.
 
 ```bash
-keystone daemon <ACTION>
+birch daemon <ACTION>
 ```
 
 **Actions:**
@@ -105,16 +105,16 @@ keystone daemon <ACTION>
 
 ```bash
 # Start daemon
-keystone daemon start
+birch daemon start
 
 # Start on custom port
-keystone daemon start --bind 0.0.0.0:9123
+birch daemon start --bind 0.0.0.0:9123
 
 # Stop daemon
-keystone daemon stop
+birch daemon stop
 
 # Check status
-keystone daemon status
+birch daemon status
 ```
 
 ### audit
@@ -122,7 +122,7 @@ keystone daemon status
 View audit logs for secret rotations.
 
 ```bash
-keystone audit [SECRET_NAME] [OPTIONS]
+birch audit [SECRET_NAME] [OPTIONS]
 ```
 
 **Arguments:**
@@ -136,24 +136,24 @@ keystone audit [SECRET_NAME] [OPTIONS]
 
 ```bash
 # All recent rotations
-keystone audit --last 10
+birch audit --last 10
 
 # Specific secret
-keystone audit MY_API_KEY
+birch audit MY_API_KEY
 
 # Specific secret and environment
-keystone audit MY_API_KEY --env prod
+birch audit MY_API_KEY --env prod
 
 # Last 5 entries for an environment
-keystone audit --env prod --last 5
+birch audit --env prod --last 5
 ```
 
 ### config
 
-Manage Keystone configuration.
+Manage Birch configuration.
 
 ```bash
-keystone config [ACTION]
+birch config [ACTION]
 ```
 
 **Actions:**
@@ -164,11 +164,11 @@ keystone config [ACTION]
 
 ```bash
 # Show config
-keystone config
-keystone config show
+birch config
+birch config show
 
 # Initialize config
-keystone config init
+birch config init
 ```
 
 ## Exit Codes
@@ -181,11 +181,11 @@ keystone config init
 
 ### Core Settings
 
-- `KEYSTONE_CONFIG_PATH`: Path to config file
-- `KEYSTONE_AUDIT_LOG_PATH`: Audit log directory
-- `KEYSTONE_COOLDOWN_SECONDS`: Cooldown period
-- `KEYSTONE_ROLLBACK_WINDOW_SECONDS`: Rollback window
-- `KEYSTONE_DAEMON_BIND`: Daemon bind address
+- `BIRCH_CONFIG_PATH`: Path to config file
+- `BIRCH_AUDIT_LOG_PATH`: Audit log directory
+- `BIRCH_COOLDOWN_SECONDS`: Cooldown period
+- `BIRCH_ROLLBACK_WINDOW_SECONDS`: Rollback window
+- `BIRCH_DAEMON_BIND`: Daemon bind address
 
 ### Provider Credentials
 
@@ -227,7 +227,7 @@ keystone config init
 
 ## Configuration File
 
-Default location: `~/.keystone/config.toml`
+Default location: `~/.birch/config.toml`
 
 See [Configuration](/docs/configuration) for full details.
 
@@ -237,13 +237,13 @@ Generate shell completion scripts:
 
 ```bash
 # Bash
-keystone completions bash > /etc/bash_completion.d/keystone
+birch completions bash > /etc/bash_completion.d/birch
 
 # Zsh
-keystone completions zsh > /usr/local/share/zsh/site-functions/_keystone
+birch completions zsh > /usr/local/share/zsh/site-functions/_birch
 
 # Fish
-keystone completions fish > ~/.config/fish/completions/keystone.fish
+birch completions fish > ~/.config/fish/completions/birch.fish
 ```
 
 *Note: Completion generation not yet implemented*

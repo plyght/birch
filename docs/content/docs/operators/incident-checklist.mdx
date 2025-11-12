@@ -33,21 +33,21 @@ This checklist provides step-by-step procedures for responding to incidents rela
 - [ ] **Rotate compromised secret immediately**:
 
 ```bash
-keystone rotate <SECRET_NAME> --env prod --service <SERVICE> --redeploy
+birch rotate <SECRET_NAME> --env prod --service <SERVICE> --redeploy
 ```
 
 - [ ] **For multiple environments**, rotate in parallel:
 
 ```bash
-keystone rotate <SECRET_NAME> --env staging --service <SERVICE> &
-keystone rotate <SECRET_NAME> --env prod --service <SERVICE> --redeploy &
+birch rotate <SECRET_NAME> --env staging --service <SERVICE> &
+birch rotate <SECRET_NAME> --env prod --service <SERVICE> --redeploy &
 wait
 ```
 
 - [ ] **Verify rotation** in audit logs:
 
 ```bash
-keystone audit <SECRET_NAME> --last 5
+birch audit <SECRET_NAME> --last 5
 ```
 
 ### Revocation (15-30 minutes)
@@ -105,7 +105,7 @@ keystone audit <SECRET_NAME> --last 5
 - [ ] **Check error message**:
 
 ```bash
-keystone audit <SECRET_NAME> --env <ENV> --last 1
+birch audit <SECRET_NAME> --env <ENV> --last 1
 ```
 
 - [ ] **Identify failure type**:
@@ -121,7 +121,7 @@ For **Lock Held** errors:
 - [ ] Check lock status:
 
 ```bash
-ls -la ~/.keystone/locks/
+ls -la ~/.birch/locks/
 ```
 
 - [ ] Verify if holder process is running:
@@ -133,7 +133,7 @@ ps aux | grep <PID>
 - [ ] Remove stale lock if process is dead:
 
 ```bash
-rm ~/.keystone/locks/<env>-<secret_name>.lock
+rm ~/.birch/locks/<env>-<secret_name>.lock
 ```
 
 For **Provider API** errors:
@@ -158,14 +158,14 @@ For **Network** errors:
 - [ ] **Retry rotation** after resolving issue:
 
 ```bash
-keystone rotate <SECRET_NAME> --env <ENV> --service <SERVICE>
+birch rotate <SECRET_NAME> --env <ENV> --service <SERVICE>
 ```
 
 - [ ] **Monitor for success**
 
 - [ ] **If repeated failures**:
   - Consider manual rotation via provider console
-  - Update Keystone config/credentials
+  - Update Birch config/credentials
   - File bug report
 
 ### Post-Incident
@@ -195,7 +195,7 @@ keystone rotate <SECRET_NAME> --env <ENV> --service <SERVICE>
 - [ ] **Rollback secret immediately**:
 
 ```bash
-keystone rollback <SECRET_NAME> --env <ENV> --service <SERVICE> --redeploy
+birch rollback <SECRET_NAME> --env <ENV> --service <SERVICE> --redeploy
 ```
 
 - [ ] **Monitor application recovery**
@@ -226,12 +226,12 @@ keystone rollback <SECRET_NAME> --env <ENV> --service <SERVICE> --redeploy
 - [ ] **Test rotation in dev/staging**:
 
 ```bash
-keystone rotate <SECRET_NAME> --env dev
+birch rotate <SECRET_NAME> --env dev
 ```
 
 - [ ] **Identify fix**:
   - Application code change needed?
-  - Keystone configuration issue?
+  - Birch configuration issue?
   - Provider-specific requirement?
 
 ### Resolution
@@ -247,20 +247,20 @@ keystone rotate <SECRET_NAME> --env dev
 
 **Severity**: MEDIUM
 
-**Trigger**: Keystone daemon stops responding or crashes
+**Trigger**: Birch daemon stops responding or crashes
 
 ### Immediate Response (0-5 minutes)
 
 - [ ] **Check daemon status**:
 
 ```bash
-keystone daemon status
+birch daemon status
 ```
 
 - [ ] **Check for process**:
 
 ```bash
-ps aux | grep keystone
+ps aux | grep birch
 ```
 
 - [ ] **Test health endpoint**:
@@ -274,13 +274,13 @@ curl http://127.0.0.1:9123/health
 - [ ] **Review daemon logs**:
 
 ```bash
-tail -100 ~/.keystone/daemon.log
+tail -100 ~/.birch/daemon.log
 ```
 
 Or if using systemd:
 
 ```bash
-sudo journalctl -u keystone -n 100
+sudo journalctl -u birch -n 100
 ```
 
 - [ ] **Check for common issues**:
@@ -292,7 +292,7 @@ sudo journalctl -u keystone -n 100
 - [ ] **Check PID file**:
 
 ```bash
-cat ~/.keystone/daemon.pid
+cat ~/.birch/daemon.pid
 ```
 
 ### Recovery (15-30 minutes)
@@ -300,25 +300,25 @@ cat ~/.keystone/daemon.pid
 - [ ] **Clean up stale state**:
 
 ```bash
-rm ~/.keystone/daemon.pid
+rm ~/.birch/daemon.pid
 ```
 
 - [ ] **Restart daemon**:
 
 ```bash
-keystone daemon start
+birch daemon start
 ```
 
 Or if using systemd:
 
 ```bash
-sudo systemctl restart keystone
+sudo systemctl restart birch
 ```
 
 - [ ] **Verify daemon is healthy**:
 
 ```bash
-keystone daemon status
+birch daemon status
 curl http://127.0.0.1:9123/health
 ```
 
@@ -355,13 +355,13 @@ curl -X POST http://127.0.0.1:9123/rotate \
 - [ ] **Check log location**:
 
 ```bash
-ls -la ~/.keystone/logs/
+ls -la ~/.birch/logs/
 ```
 
 - [ ] **Check configuration**:
 
 ```bash
-keystone config show | grep audit_log_path
+birch config show | grep audit_log_path
 ```
 
 ### Recovery (5-30 minutes)
@@ -369,7 +369,7 @@ keystone config show | grep audit_log_path
 - [ ] **Check backups** (if available):
 
 ```bash
-rsync backup-server:/keystone-audit-logs/ ~/.keystone/logs/
+rsync backup-server:/birch-audit-logs/ ~/.birch/logs/
 ```
 
 - [ ] **Reconstruct from provider logs** (if possible):
@@ -379,7 +379,7 @@ rsync backup-server:/keystone-audit-logs/ ~/.keystone/logs/
 - [ ] **Verify signing key** is intact:
 
 ```bash
-ls -la ~/.keystone/signing-key
+ls -la ~/.birch/signing-key
 ```
 
 ### Preventive Measures
@@ -388,7 +388,7 @@ ls -la ~/.keystone/signing-key
 
 ```bash
 crontab -e
-# Add: 0 2 * * * rsync -av ~/.keystone/logs/ backup-server:/keystone-audit-logs/
+# Add: 0 2 * * * rsync -av ~/.birch/logs/ backup-server:/birch-audit-logs/
 ```
 
 - [ ] **Set up log monitoring**

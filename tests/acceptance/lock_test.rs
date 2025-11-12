@@ -1,4 +1,4 @@
-use keystone::lock::Lock;
+use birch::lock::Lock;
 use std::thread;
 use std::time::Duration;
 

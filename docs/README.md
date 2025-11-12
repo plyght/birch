@@ -1,6 +1,6 @@
-# Keystone Documentation
+# Birch Documentation
 
-This is the Fumadocs-powered documentation site for Keystone.
+This is the Fumadocs-powered documentation site for Birch.
 
 ## Development
 

@@ -1,8 +1,8 @@
-# Keystone
+# Birch
 
-**Lease. Rotate. Prove.**
+**Peel. Rotate. Renew.**
 
-Keystone is an open-source CLI tool for safe, fast secret rotation. It updates local `.env` files and production host secrets by name, without proxying traffic. Your applications call provider APIs directly with their own keys.
+Birch is an open-source CLI tool for safe, fast secret rotation. It updates local `.env` files and production host secrets by name, without proxying traffic. Your applications call provider APIs directly with their own keys.
 
 ## Features
 
@@ -27,18 +27,18 @@ Or download pre-built binaries from releases.
 ### Initialize Configuration
 
 ```bash
-keystone config init
+birch config init
 ```
 
-This creates `~/.keystone/config.toml` with default settings.
+This creates `~/.birch/config.toml` with default settings.
 
 ### Dev Mode: Rotate a Secret in .env
 
 ```bash
-keystone rotate MY_API_KEY --env dev
+birch rotate MY_API_KEY --env dev
 ```
 
-This updates `MY_API_KEY` in your `.env` file and saves a rollback copy to `.keystone-rollback`.
+This updates `MY_API_KEY` in your `.env` file and saves a rollback copy to `.birch-rollback`.
 
 ### Production Mode: Rotate a Secret on Vercel
 
@@ -46,7 +46,7 @@ This updates `MY_API_KEY` in your `.env` file and saves a rollback copy to `.key
 export VERCEL_TOKEN="your-token"
 export VERCEL_PROJECT_ID="your-project-id"
 
-keystone rotate MY_API_KEY --env prod --service vercel --redeploy
+birch rotate MY_API_KEY --env prod --service vercel --redeploy
 ```
 
 This updates the secret in Vercel and optionally triggers a redeploy.
@@ -54,7 +54,7 @@ This updates the secret in Vercel and optionally triggers a redeploy.
 ### Start the Daemon for App-Signal Rotation
 
 ```bash
-keystone daemon start
+birch daemon start
 ```
 
 The daemon listens on `127.0.0.1:9123` for rotation signals from your application:
@@ -68,21 +68,21 @@ curl -X POST http://127.0.0.1:9123/rotate \
 ### Rollback a Secret
 
 ```bash
-keystone rollback MY_API_KEY --env prod --service vercel
+birch rollback MY_API_KEY --env prod --service vercel
 ```
 
 ### View Audit Logs
 
 ```bash
-keystone audit MY_API_KEY --env prod
+birch audit MY_API_KEY --env prod
 ```
 
 ## Configuration
 
-Edit `~/.keystone/config.toml`:
+Edit `~/.birch/config.toml`:
 
 ```toml
-audit_log_path = "/Users/you/.keystone/logs"
+audit_log_path = "/Users/you/.birch/logs"
 cooldown_seconds = 60
 rollback_window_seconds = 3600
 daemon_bind = "127.0.0.1:9123"
@@ -98,9 +98,9 @@ vercel_token = "optional-token-here"
 
 Environment variables override config file settings:
 
-- `KEYSTONE_AUDIT_LOG_PATH`
-- `KEYSTONE_COOLDOWN_SECONDS`
-- `KEYSTONE_ROLLBACK_WINDOW_SECONDS`
+- `BIRCH_AUDIT_LOG_PATH`
+- `BIRCH_COOLDOWN_SECONDS`
+- `BIRCH_ROLLBACK_WINDOW_SECONDS`
 - `VERCEL_TOKEN`, `NETLIFY_AUTH_TOKEN`, `RENDER_API_KEY`, etc.
 
 ## Supported Providers
@@ -147,7 +147,7 @@ Then open [http://localhost:3000](http://localhost:3000)
 
 ## Architecture
 
-Keystone is a single Rust binary with:
+Birch is a single Rust binary with:
 - CLI for manual operations
 - Optional background daemon for app-signal handling
 - File-based locking and audit logging
