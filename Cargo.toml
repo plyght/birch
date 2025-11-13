@@ -1,6 +1,6 @@
 [package]
 name = "birch"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 authors = ["Birch Contributors"]
 description = "Peel. Rotate. Renew. - Secret rotation tool for local .env and production hosts"
