@@ -47,7 +47,7 @@ build-all: check-cargo check-bun
 	@echo "✅ SDK built"
 	@echo ""
 	@echo "Building documentation..."
-	@cd docs && bun install && bun run build
+	@cd apps/docs && bun install && bun run build
 	@echo "✅ Docs built"
 	@echo ""
 	@echo "✅ All components built successfully"
@@ -79,7 +79,7 @@ test-sdk: check-bun
 
 build-docs: check-bun
 	@echo "Building documentation..."
-	@cd docs && bun install && bun run build
+	@cd apps/docs && bun install && bun run build
 	@echo "✅ Docs built"
 
 build:
@@ -95,14 +95,14 @@ clean:
 	cargo clean
 	rm -rf dist/
 	rm -rf packages/client/dist
-	rm -rf docs/.next
+	rm -rf apps/docs/.next
 
 install: release
 	sudo cp target/release/birch /usr/local/bin/
 	@echo "Installed to /usr/local/bin/birch"
 
 docker:
-	docker build -f services/api/Dockerfile -t birch:latest .
+	docker build -f apps/api/Dockerfile -t birch:latest .
 
 dist:
 	./build.sh

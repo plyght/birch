@@ -40,12 +40,12 @@ Most teams handle secret rotation with ad-hoc scripts, manual processes, or heav
 
 **Quick start:**
 ```bash
-birch saas login
-birch saas workspace create "My Team"
-birch saas provider set vercel --mode hosted
+birch login
+birch workspace create "My Team"
+birch provider set vercel --mode hosted
 ```
 
-See [docs/saas](./docs/content/docs/saas/) for full documentation.
+See [docs/saas](./apps/docs/content/docs/saas/) for full documentation.
 
 ## Installation
 
@@ -268,16 +268,16 @@ Note: Cloud secret managers update secrets directly but do not automatically tri
 Complete documentation is available in the `docs` directory, powered by Fumadocs.
 
 Quick links:
-- [Quick Start Guide](./docs/content/docs/quick-start.mdx)
-- [Key Pools](./docs/content/docs/usage/key-pools.mdx)
-- [Operator Runbook](./docs/content/docs/operators/runbook.mdx)
-- [Invariants and Guarantees](./docs/content/docs/operators/invariants.mdx)
-- [CLI Reference](./docs/content/docs/cli-reference.mdx)
+- [Quick Start Guide](./apps/docs/content/docs/quick-start.mdx)
+- [Key Pools](./apps/docs/content/docs/usage/key-pools.mdx)
+- [Operator Runbook](./apps/docs/content/docs/operators/runbook.mdx)
+- [Invariants and Guarantees](./apps/docs/content/docs/operators/invariants.mdx)
+- [CLI Reference](./apps/docs/content/docs/cli-reference.mdx)
 
 To run the documentation locally:
 
 ```bash
-cd docs
+cd apps/docs
 bun install
 bun run dev
 ```

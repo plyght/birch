@@ -8,9 +8,9 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 COPY Cargo.toml Cargo.lock ./
-COPY src ./src
-COPY examples ./examples
-COPY tests ./tests
+COPY apps/cli ./apps/cli
+COPY infra/examples ./infra/examples
+COPY infra/tests ./infra/tests
 
 RUN cargo build --release
 

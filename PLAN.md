@@ -119,22 +119,17 @@ Rotation Request → Check Provider Mode
 
 ```
 birch/
-├── src/                    # CLI/daemon (existing)
-├── packages/client/        # SDK (existing)
-├── services/
-│   ├── api/               # SaaS backend (Rust)
-│   │   ├── supabase/     # Supabase integration
-│   │   ├── auth/         # API keys, custom logic
-│   │   ├── vault/        # Credential vault
-│   │   ├── credentials/  # Credential resolution (resolver, kms, oauth, cache)
-│   │   ├── policy/       # Policy engine (engine, evaluator, approval)
-│   │   ├── orchestration/# Connector orchestration
-│   │   ├── audit/        # Audit logging
-│   │   ├── alerts/       # Alerting (slack, email, webhook)
-│   │   └── workspace/    # Multi-tenancy (models, rbac)
-│   └── web/              # Dashboard (Next.js + Supabase client)
-├── supabase/             # Migrations, functions, config
-└── docs/                 # Documentation (existing)
+├── apps/
+│   ├── cli/              # CLI/daemon
+│   ├── api/              # SaaS backend (Rust)
+│   ├── web/              # Dashboard (Next.js + Supabase client)
+│   └── docs/             # Documentation
+├── packages/
+│   └── client/           # TypeScript SDK
+└── infra/
+    ├── supabase/        # Migrations, functions, config
+    ├── examples/        # Example code
+    └── tests/           # Test suites
 ```
 
 **Principles:** Everything OSS, monorepo, transparent, self-hostable

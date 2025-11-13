@@ -1,0 +1,60 @@
+[package]
+name = "birch"
+version = "0.1.1"
+edition = "2021"
+authors = ["Birch Contributors"]
+description = "Peel. Rotate. Renew. - Secret rotation tool for local .env and production hosts"
+license = "MIT"
+repository = "https://github.com/plyght/birch"
+
+[lib]
+name = "birch"
+path = "lib.rs"
+
+[[bin]]
+name = "birch"
+path = "main.rs"
+
+[[example]]
+name = "app_signal_hook"
+path = "../../infra/examples/rust/app_signal_hook.rs"
+
+[dependencies]
+clap = { version = "4.5", features = ["derive", "env"] }
+tokio = { version = "1.40", features = ["full"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+toml = "0.8"
+reqwest = { version = "0.12", features = ["json"] }
+dotenv = "0.15"
+ed25519-dalek = { version = "2.1", features = ["serde"] }
+anyhow = "1.0"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+thiserror = "1.0"
+chrono = { version = "0.4", features = ["serde"] }
+rand = "0.8"
+hex = "0.4"
+axum = "0.7"
+tower = "0.4"
+tower-http = { version = "0.5", features = ["trace"] }
+uuid = { version = "1.10", features = ["v4", "serde"] }
+dialoguer = "0.11"
+dirs = "5.0"
+async-trait = "0.1"
+chacha20poly1305 = "0.10"
+aws-config = { version = "1.1", features = ["behavior-version-latest"] }
+aws-sdk-secretsmanager = "1.13"
+google-secretmanager1 = "5.0"
+azure_core = "0.20"
+azure_security_keyvault = "0.20"
+azure_identity = "0.20"
+base64 = "0.22"
+base64ct = "=1.7.3"
+ratatui = "0.29"
+crossterm = "0.28"
+
+[dev-dependencies]
+tempfile = "3.12"
+mockito = "1.5"
+
