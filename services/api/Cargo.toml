@@ -57,6 +57,8 @@ reqwest = { version = "0.12", features = ["json"] }
 regex = "1.10"
 chrono-tz = "0.9"
 ed25519-dalek = { version = "2.1", features = ["serde"] }
+resend-rs = { version = "0.1", features = ["async"] }
+html-escape = "0.2"
 
 birch = { path = "../../" }
 

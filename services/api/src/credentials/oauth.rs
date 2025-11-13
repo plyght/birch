@@ -1,4 +1,4 @@
-use anyhow::{Context, Result};
+use anyhow::Result;
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
@@ -34,9 +34,7 @@ impl OAuthHandler {
         provider: &str,
         refresh_token: &str,
     ) -> Result<()> {
-        let encrypted = self
-            .encryption
-            .encrypt(workspace_id, refresh_token.as_bytes())?;
+        let encrypted = self.encryption.encrypt(&workspace_id, refresh_token)?;
 
         let db_client = self.client.get_client().await?;
 
@@ -74,9 +72,9 @@ impl OAuthHandler {
         }
 
         let encrypted: Vec<u8> = rows[0].get(0);
-        let decrypted = self.encryption.decrypt(workspace_id, &encrypted)?;
+        let decrypted = self.encryption.decrypt(&workspace_id, &encrypted)?;
 
-        String::from_utf8(decrypted).context("Failed to decode refresh token as UTF-8")
+        Ok(decrypted)
     }
 
     pub async fn get_cached_access_token(

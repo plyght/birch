@@ -1,5 +1,4 @@
 use anyhow::Result;
-use axum::{routing::get, Router};
 use birch_api::{api::routes::create_router, supabase::client::SupabaseClient};
 use std::env;
 use tower_http::{cors::CorsLayer, trace::TraceLayer};

@@ -15,6 +15,7 @@ impl AlertManager {
         Self { client }
     }
 
+    #[allow(clippy::too_many_arguments)]
     pub async fn send_alert(
         &self,
         workspace_id: Uuid,
@@ -66,6 +67,9 @@ impl AlertManager {
     }
 
     async fn get_alert_config(&self, workspace_id: Uuid) -> Result<AlertConfig> {
+        // TODO: Fetch alert configuration from database
+        // Currently returns default config - database integration not yet implemented
+        let _db_client = self.client.get_client().await?;
         Ok(AlertConfig {
             workspace_id,
             channels: vec![AlertChannelConfig {
@@ -77,7 +81,7 @@ impl AlertManager {
     }
 
     async fn send_email(&self, alert: &Alert, config: &serde_json::Value) -> Result<()> {
-        let email_channel = EmailChannel::new(config.clone());
+        let email_channel = EmailChannel::new(config.clone())?;
         let recipients = vec!["admin@example.com".to_string()];
         email_channel.send(alert, recipients).await
     }

@@ -99,7 +99,7 @@ pub async fn list_workspaces(
         .await
         .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
 
-    let limit = query.limit.max(1).min(100);
+    let limit = query.limit.clamp(1, 100);
     let offset = query.page.max(0) * limit;
 
     let stmt = db_client

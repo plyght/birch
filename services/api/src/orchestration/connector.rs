@@ -2,11 +2,6 @@ use anyhow::Result;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 
-use birch::connectors::{
-    aws::AwsConnector, azure::AzureConnector, cloudflare::CloudflareConnector, fly::FlyConnector,
-    gcp::GcpConnector, netlify::NetlifyConnector, render::RenderConnector, vercel::VercelConnector,
-};
-
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ConnectorConfig {
     pub provider: String,
@@ -71,8 +66,8 @@ impl ConnectorOrchestrator {
 
     async fn rotate_aws(
         &self,
-        request: &RotationRequest,
-        config: &ConnectorConfig,
+        _request: &RotationRequest,
+        _config: &ConnectorConfig,
     ) -> Result<RotationResult> {
         Ok(RotationResult {
             success: true,
@@ -88,8 +83,8 @@ impl ConnectorOrchestrator {
 
     async fn rotate_gcp(
         &self,
-        request: &RotationRequest,
-        config: &ConnectorConfig,
+        _request: &RotationRequest,
+        _config: &ConnectorConfig,
     ) -> Result<RotationResult> {
         Ok(RotationResult {
             success: true,
@@ -105,8 +100,8 @@ impl ConnectorOrchestrator {
 
     async fn rotate_azure(
         &self,
-        request: &RotationRequest,
-        config: &ConnectorConfig,
+        _request: &RotationRequest,
+        _config: &ConnectorConfig,
     ) -> Result<RotationResult> {
         Ok(RotationResult {
             success: true,
@@ -122,8 +117,8 @@ impl ConnectorOrchestrator {
 
     async fn rotate_vercel(
         &self,
-        request: &RotationRequest,
-        config: &ConnectorConfig,
+        _request: &RotationRequest,
+        _config: &ConnectorConfig,
     ) -> Result<RotationResult> {
         Ok(RotationResult {
             success: true,
@@ -139,8 +134,8 @@ impl ConnectorOrchestrator {
 
     async fn rotate_netlify(
         &self,
-        request: &RotationRequest,
-        config: &ConnectorConfig,
+        _request: &RotationRequest,
+        _config: &ConnectorConfig,
     ) -> Result<RotationResult> {
         Ok(RotationResult {
             success: true,
@@ -156,8 +151,8 @@ impl ConnectorOrchestrator {
 
     async fn rotate_render(
         &self,
-        request: &RotationRequest,
-        config: &ConnectorConfig,
+        _request: &RotationRequest,
+        _config: &ConnectorConfig,
     ) -> Result<RotationResult> {
         Ok(RotationResult {
             success: true,
@@ -173,8 +168,8 @@ impl ConnectorOrchestrator {
 
     async fn rotate_fly(
         &self,
-        request: &RotationRequest,
-        config: &ConnectorConfig,
+        _request: &RotationRequest,
+        _config: &ConnectorConfig,
     ) -> Result<RotationResult> {
         Ok(RotationResult {
             success: true,
@@ -190,8 +185,8 @@ impl ConnectorOrchestrator {
 
     async fn rotate_cloudflare(
         &self,
-        request: &RotationRequest,
-        config: &ConnectorConfig,
+        _request: &RotationRequest,
+        _config: &ConnectorConfig,
     ) -> Result<RotationResult> {
         Ok(RotationResult {
             success: true,
@@ -222,9 +217,9 @@ impl ConnectorOrchestrator {
 
     pub async fn rollback(
         &self,
-        request: &RotationRequest,
+        _request: &RotationRequest,
         old_value: &str,
-        config: &ConnectorConfig,
+        _config: &ConnectorConfig,
     ) -> Result<RotationResult> {
         Ok(RotationResult {
             success: true,
@@ -236,5 +231,11 @@ impl ConnectorOrchestrator {
                 "message": "Rollback completed"
             }),
         })
+    }
+}
+
+impl Default for ConnectorOrchestrator {
+    fn default() -> Self {
+        Self::new()
     }
 }

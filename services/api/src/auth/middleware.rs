@@ -1,6 +1,6 @@
 use axum::{
     extract::{Request, State},
-    http::{HeaderMap, StatusCode},
+    http::StatusCode,
     middleware::Next,
     response::Response,
 };
@@ -16,10 +16,10 @@ pub struct AuthContext {
 
 pub async fn auth_middleware(
     State(state): State<AppState>,
-    headers: HeaderMap,
     mut request: Request,
     next: Next,
 ) -> Result<Response, StatusCode> {
+    let headers = request.headers();
     let auth_header = headers
         .get("authorization")
         .and_then(|h| h.to_str().ok())

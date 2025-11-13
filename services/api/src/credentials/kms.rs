@@ -60,7 +60,7 @@ impl KmsHandler {
         let region = config["aws_region"]
             .as_str()
             .context("Missing aws_region in config")?;
-        let kms_key_id = config["kms_key_id"]
+        let _kms_key_id = config["kms_key_id"]
             .as_str()
             .context("Missing kms_key_id in config")?;
         let secret_arn = config["secret_arn"]
@@ -104,7 +104,7 @@ impl KmsHandler {
             .and_then(|v| v.as_str())
             .context("Missing secret mapping for this secret")?;
 
-        let secret_path = format!(
+        let _secret_path = format!(
             "projects/{}/secrets/{}/versions/latest",
             project_id, secret_id
         );
@@ -117,10 +117,10 @@ impl KmsHandler {
         config: &JsonValue,
         secret_name: &str,
     ) -> Result<String> {
-        let vault_url = config["azure_vault_url"]
+        let _vault_url = config["azure_vault_url"]
             .as_str()
             .context("Missing azure_vault_url in config")?;
-        let secret_id = config["secrets"]
+        let _secret_id = config["secrets"]
             .get(secret_name)
             .and_then(|v| v.as_str())
             .unwrap_or(secret_name);

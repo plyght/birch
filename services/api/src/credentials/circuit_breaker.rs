@@ -1,4 +1,3 @@
-use anyhow::Result;
 use chrono::{DateTime, Duration, Utc};
 use std::collections::HashMap;
 use std::sync::{Arc, Mutex};
@@ -16,6 +15,7 @@ struct CircuitBreakerState {
     failure_count: u32,
     last_failure_time: Option<DateTime<Utc>>,
     last_success_time: Option<DateTime<Utc>>,
+    half_open_request_count: u32,
 }
 
 pub struct CircuitBreaker {
@@ -44,6 +44,7 @@ impl CircuitBreaker {
                 failure_count: 0,
                 last_failure_time: None,
                 last_success_time: None,
+                half_open_request_count: 0,
             });
 
         match state.state {
@@ -54,6 +55,7 @@ impl CircuitBreaker {
                     if elapsed > Duration::seconds(self.timeout_seconds) {
                         state.state = CircuitState::HalfOpen;
                         state.failure_count = 0;
+                        state.half_open_request_count = 0;
                         true
                     } else {
                         false
@@ -62,15 +64,25 @@ impl CircuitBreaker {
                     false
                 }
             }
-            CircuitState::HalfOpen => true,
+            CircuitState::HalfOpen => {
+                if state.half_open_request_count >= self.half_open_max_requests {
+                    false
+                } else {
+                    state.half_open_request_count += 1;
+                    true
+                }
+            }
         }
     }
 
     pub fn record_success(&self, key: &str) {
         let mut states = self.states.lock().unwrap();
         if let Some(state) = states.get_mut(key) {
-            state.state = CircuitState::Closed;
+            if state.state == CircuitState::HalfOpen {
+                state.state = CircuitState::Closed;
+            }
             state.failure_count = 0;
+            state.half_open_request_count = 0;
             state.last_success_time = Some(Utc::now());
         }
     }
@@ -84,6 +96,7 @@ impl CircuitBreaker {
                 failure_count: 0,
                 last_failure_time: None,
                 last_success_time: None,
+                half_open_request_count: 0,
             });
 
         state.failure_count += 1;

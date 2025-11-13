@@ -12,10 +12,13 @@ pub mod supabase;
 pub mod vault;
 pub mod workspace;
 
+#[allow(ambiguous_glob_reexports)]
 pub use alerts::*;
+#[allow(ambiguous_glob_reexports)]
 pub use api::*;
 pub use approval::*;
 pub use audit::*;
+#[allow(ambiguous_glob_reexports)]
 pub use auth::*;
 pub use credentials::*;
 pub use enterprise::*;
@@ -24,4 +27,5 @@ pub use orchestration::*;
 pub use policy::*;
 pub use supabase::*;
 pub use vault::*;
+#[allow(ambiguous_glob_reexports)]
 pub use workspace::*;

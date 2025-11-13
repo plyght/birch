@@ -38,7 +38,7 @@ impl HealthMonitor {
 
     pub async fn record_success(
         &self,
-        workspace_id: Uuid,
+        _workspace_id: Uuid,
         provider: &str,
         mode: &str,
     ) -> Result<()> {
@@ -48,7 +48,7 @@ impl HealthMonitor {
 
     pub async fn record_failure(
         &self,
-        workspace_id: Uuid,
+        _workspace_id: Uuid,
         provider: &str,
         mode: &str,
         error: &str,

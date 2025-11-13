@@ -150,7 +150,7 @@ impl CredentialResolver {
         &self,
         workspace_id: Uuid,
         provider: &str,
-        secret_name: &str,
+        _secret_name: &str,
     ) -> Result<String> {
         let circuit_key = format!("oauth:{}:{}", workspace_id, provider);
 

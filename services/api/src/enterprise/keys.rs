@@ -36,6 +36,9 @@ impl CustomerKeyManager {
         key_provider: KeyProvider,
         key_arn: String,
     ) -> Result<CustomerManagedKey> {
+        // TODO: Implement database persistence for customer-managed keys
+        // See PLAN.md Phase 5 for implementation details
+        let _db_client = self.client.get_client().await?;
         tracing::info!(
             "Registering customer-managed key for workspace {}",
             workspace_id
@@ -55,9 +58,12 @@ impl CustomerKeyManager {
     pub async fn rotate_key(
         &self,
         workspace_id: Uuid,
-        old_key_id: &str,
-        new_key_arn: String,
+        _old_key_id: &str,
+        _new_key_arn: String,
     ) -> Result<()> {
+        // TODO: Implement key rotation logic and database updates
+        // See PLAN.md Phase 5 for implementation details
+        let _db_client = self.client.get_client().await?;
         tracing::info!(
             "Rotating customer-managed key for workspace {}",
             workspace_id
@@ -66,7 +72,10 @@ impl CustomerKeyManager {
         Ok(())
     }
 
-    pub async fn validate_key_access(&self, workspace_id: Uuid, key_arn: &str) -> Result<bool> {
+    pub async fn validate_key_access(&self, workspace_id: Uuid, _key_arn: &str) -> Result<bool> {
+        // TODO: Implement actual key access validation
+        // See PLAN.md Phase 5 for implementation details
+        let _db_client = self.client.get_client().await?;
         tracing::debug!("Validating key access for workspace {}", workspace_id);
 
         Ok(true)

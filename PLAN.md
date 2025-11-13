@@ -180,6 +180,8 @@ birch/
 1. Policy engine: Thresholds, maintenance windows, evaluation logic
 2. Connector orchestration: Reuse Birch connectors, policy integration, error handling
 3. Basic alerts: Email, Slack (basic)
+   - **Status:** Alert sending implemented, but alert configuration is hardcoded
+   - **TODO:** Implement database-backed alert configuration storage and retrieval
 
 **Success:** Policies created/evaluated, rotations respect thresholds/windows, alerts working
 
@@ -207,8 +209,12 @@ birch/
 
 **Components:**
 1. SSO/SCIM: Supabase SSO (OIDC/SAML), domain verification, SCIM provisioning
+   - **Status:** Stub implementations exist, database persistence not yet implemented
+   - **TODO:** Implement SSO configuration storage, domain verification (DNS TXT checks), SCIM API endpoints
 2. Enhanced audit: Export (JSON/CSV), retention settings, advanced filtering, compliance reporting
 3. Customer-managed keys: Key management UI, rotation support
+   - **Status:** Stub implementations exist, database persistence not yet implemented
+   - **TODO:** Implement key registration/rotation database operations, key access validation logic
 
 **Success:** SSO login, SCIM provisioning, audit exports, customer-managed keys working
 

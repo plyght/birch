@@ -102,6 +102,7 @@ impl PolicyEngine {
         Ok(self.evaluator.summarize_results(results))
     }
 
+    #[allow(clippy::too_many_arguments)]
     pub async fn create_policy(
         &self,
         workspace_id: Uuid,

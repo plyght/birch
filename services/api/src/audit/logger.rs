@@ -2,6 +2,7 @@ use anyhow::Result;
 use chrono::Utc;
 use ed25519_dalek::{Signature, Signer, SigningKey};
 use rand::rngs::OsRng;
+use rand::RngCore;
 use serde_json::Value as JsonValue;
 use uuid::Uuid;
 
@@ -15,7 +16,9 @@ pub struct AuditLogger {
 
 impl AuditLogger {
     pub fn new(client: SupabaseClient) -> Self {
-        let signing_key = SigningKey::generate(&mut OsRng);
+        let mut secret_bytes = [0u8; 32];
+        OsRng.fill_bytes(&mut secret_bytes);
+        let signing_key = SigningKey::from_bytes(&secret_bytes);
         Self {
             client,
             signing_key,
@@ -86,7 +89,7 @@ impl AuditLogger {
             )
             .await?;
 
-        Ok(self.row_to_audit_log(&row)?)
+        self.row_to_audit_log(&row)
     }
 
     pub async fn list_logs(
@@ -165,7 +168,7 @@ impl AuditLogger {
         let start = request
             .start_date
             .unwrap_or_else(|| Utc::now() - chrono::Duration::days(30));
-        let end = request.end_date.unwrap_or_else(|| Utc::now());
+        let end = request.end_date.unwrap_or_else(Utc::now);
 
         let db_client = self.client.get_client().await?;
 

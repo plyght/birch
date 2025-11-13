@@ -1,5 +1,4 @@
 use anyhow::Result;
-use chrono::{DateTime, Utc};
 use uuid::Uuid;
 
 use crate::supabase::SupabaseClient;

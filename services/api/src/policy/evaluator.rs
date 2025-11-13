@@ -1,5 +1,5 @@
 use anyhow::Result;
-use chrono::{DateTime, NaiveTime, Utc, Weekday};
+use chrono::{Datelike, NaiveTime, Utc, Weekday};
 use chrono_tz::Tz;
 
 use crate::policy::models::*;
@@ -162,10 +162,8 @@ impl PolicyEvaluator {
                 if current_time >= start_time && current_time <= end_time {
                     return Ok(true);
                 }
-            } else {
-                if current_time >= start_time || current_time <= end_time {
-                    return Ok(true);
-                }
+            } else if current_time >= start_time || current_time <= end_time {
+                return Ok(true);
             }
         }
 
@@ -221,5 +219,11 @@ impl PolicyEvaluator {
             blocking_reasons,
             results,
         }
+    }
+}
+
+impl Default for PolicyEvaluator {
+    fn default() -> Self {
+        Self::new()
     }
 }

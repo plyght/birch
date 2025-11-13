@@ -56,6 +56,52 @@ jobs:
     - name: Check formatting
       run: cargo fmt -- --check
 
+  test-api:
+    name: Test Rust API
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        rust: [stable]
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Install Rust
+      uses: dtolnay/rust-toolchain@stable
+      with:
+        toolchain: ${{ matrix.rust }}
+    
+    - name: Cache cargo registry
+      uses: actions/cache@v4
+      with:
+        path: ~/.cargo/registry
+        key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+    
+    - name: Cache cargo index
+      uses: actions/cache@v4
+      with:
+        path: ~/.cargo/git
+        key: ${{ runner.os }}-cargo-index-${{ hashFiles('**/Cargo.lock') }}
+    
+    - name: Cache cargo build
+      uses: actions/cache@v4
+      with:
+        path: target
+        key: ${{ runner.os }}-cargo-build-target-${{ hashFiles('**/Cargo.lock') }}
+    
+    - name: Build
+      run: cargo build --manifest-path services/api/Cargo.toml --verbose
+    
+    - name: Run tests
+      run: cargo test --manifest-path services/api/Cargo.toml --verbose
+    
+    - name: Run clippy
+      run: cargo clippy --manifest-path services/api/Cargo.toml -- -D warnings
+    
+    - name: Check formatting
+      run: cargo fmt --manifest-path services/api/Cargo.toml -- --check
+
   test-sdk:
     name: Test TypeScript SDK
     runs-on: ${{ matrix.os }}
@@ -86,7 +132,7 @@ jobs:
   build:
     name: Build Release Artifacts
     runs-on: ubuntu-latest
-    needs: [test-cli, test-sdk]
+    needs: [test-cli, test-api, test-sdk]
     if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
     
     steps:
@@ -124,7 +170,7 @@ jobs:
   docker:
     name: Build Docker Image
     runs-on: ubuntu-latest
-    needs: [test-cli, test-sdk]
+    needs: [test-cli, test-api, test-sdk]
     if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
     
     steps:

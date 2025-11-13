@@ -1,5 +1,4 @@
 use anyhow::Result;
-use chrono::{Date, Utc};
 use uuid::Uuid;
 
 use crate::supabase::SupabaseClient;
@@ -82,7 +81,7 @@ impl MeteringService {
             }
 
             let count: i32 = rows[0].get(0);
-            Ok(count <= limit)
+            Ok(count <= limit as i32)
         } else {
             self.increment_rotation_count(workspace_id).await?;
             Ok(true)

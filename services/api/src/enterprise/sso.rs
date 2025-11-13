@@ -36,6 +36,9 @@ impl SsoManager {
         domain: String,
         metadata: serde_json::Value,
     ) -> Result<SsoConfig> {
+        // TODO: Implement SSO configuration persistence
+        // See PLAN.md Phase 5 for implementation details
+        let _db_client = self.client.get_client().await?;
         tracing::info!("Configuring SSO for workspace {}", workspace_id);
 
         Ok(SsoConfig {
@@ -48,6 +51,9 @@ impl SsoManager {
     }
 
     pub async fn verify_domain(&self, workspace_id: Uuid, domain: &str) -> Result<bool> {
+        // TODO: Implement domain verification logic (DNS TXT record check)
+        // See PLAN.md Phase 5 for implementation details
+        let _db_client = self.client.get_client().await?;
         tracing::info!("Verifying domain {} for workspace {}", domain, workspace_id);
 
         Ok(true)
@@ -57,8 +63,11 @@ impl SsoManager {
         &self,
         workspace_id: Uuid,
         email: &str,
-        role: &str,
+        _role: &str,
     ) -> Result<Uuid> {
+        // TODO: Implement SCIM user provisioning
+        // See PLAN.md Phase 5 for implementation details
+        let _db_client = self.client.get_client().await?;
         tracing::info!(
             "Provisioning user {} via SCIM for workspace {}",
             email,
@@ -69,6 +78,9 @@ impl SsoManager {
     }
 
     pub async fn deprovision_user_scim(&self, workspace_id: Uuid, user_id: Uuid) -> Result<()> {
+        // TODO: Implement SCIM user deprovisioning
+        // See PLAN.md Phase 5 for implementation details
+        let _db_client = self.client.get_client().await?;
         tracing::info!(
             "Deprovisioning user {} via SCIM for workspace {}",
             user_id,

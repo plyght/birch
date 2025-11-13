@@ -1,6 +1,5 @@
 use anyhow::Result;
 use chrono::{Duration, Utc};
-use serde_json::Value as JsonValue;
 use uuid::Uuid;
 
 use crate::alerts::manager::AlertManager;
@@ -123,7 +122,7 @@ impl ApprovalSystem {
             anyhow::bail!("Approval request not found or already processed");
         }
 
-        Ok(self.row_to_approval_request(&rows[0])?)
+        self.row_to_approval_request(&rows[0])
     }
 
     pub async fn reject_request(
@@ -154,7 +153,7 @@ impl ApprovalSystem {
             anyhow::bail!("Approval request not found or already processed");
         }
 
-        Ok(self.row_to_approval_request(&rows[0])?)
+        self.row_to_approval_request(&rows[0])
     }
 
     pub async fn cancel_request(&self, request_id: Uuid) -> Result<ApprovalRequest> {
@@ -177,7 +176,7 @@ impl ApprovalSystem {
             anyhow::bail!("Approval request not found or already processed");
         }
 
-        Ok(self.row_to_approval_request(&rows[0])?)
+        self.row_to_approval_request(&rows[0])
     }
 
     pub async fn expire_old_requests(&self) -> Result<Vec<Uuid>> {

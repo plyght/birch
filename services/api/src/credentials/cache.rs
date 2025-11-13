@@ -41,7 +41,7 @@ impl CredentialCache {
     ) -> Result<()> {
         let key = Self::cache_key(workspace_id, provider, secret_name);
         self.manager
-            .set_ex(&key, value, self.ttl_seconds as u64)
+            .set_ex::<_, _, ()>(&key, value, self.ttl_seconds as u64)
             .await?;
         Ok(())
     }

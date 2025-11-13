@@ -109,6 +109,9 @@ fn api_routes(state: AppState) -> Router {
             "/workspaces/:id/api-keys/:key_id",
             delete(api_keys::revoke_api_key),
         )
-        .layer(middleware::from_fn(auth_middleware))
+        .layer(middleware::from_fn_with_state(
+            state.clone(),
+            auth_middleware,
+        ))
         .with_state(state)
 }

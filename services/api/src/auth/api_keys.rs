@@ -4,7 +4,6 @@ use argon2::{
     Argon2,
 };
 use rand::Rng;
-use uuid::Uuid;
 
 const API_KEY_LENGTH: usize = 32;
 
