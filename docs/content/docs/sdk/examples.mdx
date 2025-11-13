@@ -10,7 +10,7 @@ description: Code examples and patterns for using the Birch SDK
 The simplest way to use the SDK:
 
 ```typescript
-import '@birch/client/auto';
+import '@inaplight/birch-client/auto';
 
 const response = await fetch('https://api.tiktok.com/v1/videos', {
   headers: {
@@ -25,7 +25,7 @@ const response = await fetch('https://api.tiktok.com/v1/videos', {
 
 ```typescript
 // app/layout.tsx
-import '@birch/client/auto';
+import '@inaplight/birch-client/auto';
 
 export default function RootLayout({ children }) {
   return <html><body>{children}</body></html>;
@@ -48,7 +48,7 @@ export async function GET() {
 ### Express
 
 ```typescript
-import '@birch/client/auto';
+import '@inaplight/birch-client/auto';
 import express from 'express';
 
 const app = express();
@@ -69,7 +69,7 @@ app.listen(3000);
 ### Standalone Script
 
 ```typescript
-import '@birch/client/auto';
+import '@inaplight/birch-client/auto';
 
 async function main() {
   const response = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -97,7 +97,7 @@ main();
 Works automatically with Node.js native `fetch()` or `node-fetch`:
 
 ```typescript
-import '@birch/client/auto';
+import '@inaplight/birch-client/auto';
 
 await fetch(url, { 
   headers: { 
@@ -111,7 +111,7 @@ await fetch(url, {
 Automatically detects and patches axios:
 
 ```typescript
-import '@birch/client/auto';
+import '@inaplight/birch-client/auto';
 import axios from 'axios';
 
 await axios.get(url, {
@@ -130,7 +130,7 @@ The SDK monkey-patches `globalThis.fetch`, so any HTTP client that uses fetch un
 ### Manual Configuration
 
 ```typescript
-import { configureBirch, installFetchInterceptor } from '@birch/client';
+import { configureBirch, installFetchInterceptor } from '@inaplight/birch-client';
 
 await configureBirch({
   daemonUrl: 'http://localhost:9123',
@@ -145,7 +145,7 @@ installFetchInterceptor();
 ### Manual Rotation
 
 ```typescript
-import { daemonClient } from '@birch/client';
+import { daemonClient } from '@inaplight/birch-client';
 
 const result = await daemonClient.rotate('TIKTOK_API_KEY');
 
@@ -158,7 +158,7 @@ if (result.success && result.new_value) {
 ### Health Check
 
 ```typescript
-import { daemonClient } from '@birch/client';
+import { daemonClient } from '@inaplight/birch-client';
 
 const isHealthy = await daemonClient.checkHealth();
 
@@ -173,7 +173,7 @@ if (!isHealthy) {
 ### Check Rotation Result
 
 ```typescript
-import { daemonClient } from '@birch/client';
+import { daemonClient } from '@inaplight/birch-client';
 
 const result = await daemonClient.rotate('MY_API_KEY');
 
@@ -194,7 +194,7 @@ console.log('Successfully rotated to:', result.new_value);
 ### Graceful Degradation
 
 ```typescript
-import '@birch/client/auto';
+import '@inaplight/birch-client/auto';
 
 async function makeApiCall() {
   try {
@@ -252,7 +252,7 @@ vercel deploy
 ### Custom Retry Logic
 
 ```typescript
-import '@birch/client/auto';
+import '@inaplight/birch-client/auto';
 
 async function fetchWithRetry(url: string, maxRetries = 3) {
   for (let i = 0; i < maxRetries; i++) {
@@ -281,7 +281,7 @@ async function fetchWithRetry(url: string, maxRetries = 3) {
 ### Multiple API Keys
 
 ```typescript
-import '@birch/client/auto';
+import '@inaplight/birch-client/auto';
 
 async function callMultipleApis() {
   const [tiktok, twitter, openai] = await Promise.all([

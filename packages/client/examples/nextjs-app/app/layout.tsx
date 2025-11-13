@@ -1,4 +1,4 @@
-import '@birch/client/auto';
+import '@inaplight/birch-client/auto';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {

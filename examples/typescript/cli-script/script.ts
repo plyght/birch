@@ -1,4 +1,4 @@
-import '@birch/client/auto';
+import '@inaplight/birch-client/auto';
 
 async function fetchTikTokVideos() {
   console.log('Fetching TikTok videos...');

@@ -11,7 +11,7 @@ Add the import to your root layout:
 
 ```typescript
 // app/layout.tsx
-import '@birch/client/auto';
+import '@inaplight/birch-client/auto';
 
 export default function RootLayout({ children }) {
   return <html><body>{children}</body></html>;
@@ -39,7 +39,7 @@ Add the import to `_app.tsx`:
 
 ```typescript
 // pages/_app.tsx
-import '@birch/client/auto';
+import '@inaplight/birch-client/auto';
 import type { AppProps } from 'next/app';
 
 export default function App({ Component, pageProps }: AppProps) {
@@ -85,7 +85,7 @@ For production, add to Vercel environment variables.
 
 ```typescript
 // server.ts
-import '@birch/client/auto';
+import '@inaplight/birch-client/auto';
 import express from 'express';
 
 const app = express();
@@ -107,7 +107,7 @@ app.listen(3000);
 
 ```typescript
 // server.ts
-import '@birch/client/auto';
+import '@inaplight/birch-client/auto';
 import express, { Request, Response } from 'express';
 
 const app = express();
@@ -169,7 +169,7 @@ Note: The SDK import should be in your server-side entry point, not in client co
 
 ```typescript
 // app/root.tsx
-import '@birch/client/auto';
+import '@inaplight/birch-client/auto';
 import { Links, Meta, Outlet } from '@remix-run/react';
 
 export default function App() {
@@ -210,7 +210,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
 ```typescript
 // src/app.d.ts
-import '@birch/client/auto';
+import '@inaplight/birch-client/auto';
 ```
 
 ### API Route
@@ -237,7 +237,7 @@ export const GET: RequestHandler = async () => {
 
 ```typescript
 // plugins/birch.client.ts
-import '@birch/client/auto';
+import '@inaplight/birch-client/auto';
 ```
 
 ### API Route
@@ -261,7 +261,7 @@ export default defineEventHandler(async (event) => {
 
 ```typescript
 // script.ts
-import '@birch/client/auto';
+import '@inaplight/birch-client/auto';
 
 async function main() {
   const response = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -295,7 +295,7 @@ bun run script.ts
 ### Environment-Specific Configuration
 
 ```typescript
-import { configureBirch } from '@birch/client';
+import { configureBirch } from '@inaplight/birch-client';
 
 if (process.env.NODE_ENV === 'production') {
   await configureBirch({
@@ -315,7 +315,7 @@ if (process.env.NODE_ENV === 'production') {
 
 ```typescript
 if (process.env.BIRCH_ENABLED !== 'false') {
-  await import('@birch/client/auto');
+  await import('@inaplight/birch-client/auto');
 }
 ```
 

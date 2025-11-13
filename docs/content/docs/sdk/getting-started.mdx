@@ -14,13 +14,13 @@ This guide will help you set up the Birch SDK and perform your first automatic k
 ## Install the SDK
 
 ```bash
-npm install @birch/client
+npm install @inaplight/birch-client
 ```
 
 Or with Bun:
 
 ```bash
-bun add @birch/client
+bun add @inaplight/birch-client
 ```
 
 ## Set Up Birch Daemon
@@ -56,7 +56,7 @@ Add a single import to your application entry point:
 
 ```typescript
 // app/layout.tsx
-import '@birch/client/auto';
+import '@inaplight/birch-client/auto';
 
 export default function RootLayout({ children }) {
   return <html><body>{children}</body></html>;
@@ -67,7 +67,7 @@ export default function RootLayout({ children }) {
 
 ```typescript
 // server.ts or index.ts
-import '@birch/client/auto';
+import '@inaplight/birch-client/auto';
 import express from 'express';
 
 const app = express();
@@ -78,7 +78,7 @@ const app = express();
 
 ```typescript
 // script.ts
-import '@birch/client/auto';
+import '@inaplight/birch-client/auto';
 
 async function main() {
   // Your code here

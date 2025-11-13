@@ -17,11 +17,19 @@ Birch is an open-source CLI tool for safe, fast secret rotation. It updates loca
 
 ## Installation
 
+### From crates.io
+
+```bash
+cargo install birch
+```
+
+### From Source
+
 ```bash
 cargo install --path .
 ```
 
-Or download pre-built binaries from releases.
+Or download pre-built binaries from [releases](https://github.com/plyght/birch/releases).
 
 ## Quick Start
 
@@ -113,14 +121,14 @@ See [Key Pool Documentation](./docs/content/docs/usage/key-pools.mdx) for detail
 
 ### Zero-Config SDK
 
-For even simpler integration, use the `@birch/client` SDK that automatically handles rate limits:
+For even simpler integration, use the `@inaplight/birch-client` SDK that automatically handles rate limits:
 
 ```bash
-npm install @birch/client
+npm install @inaplight/birch-client
 ```
 
 ```typescript
-import '@birch/client/auto';
+import '@inaplight/birch-client/auto';
 
 const response = await fetch('https://api.tiktok.com/v1/videos', {
   headers: {

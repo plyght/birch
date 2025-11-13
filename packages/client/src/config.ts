@@ -61,7 +61,7 @@ export async function autoDetectConfig(): Promise<BirchConfig> {
 
 export function getConfig(): BirchConfig {
   if (!globalConfig) {
-    throw new Error('@birch/client not initialized. Import "@birch/client/auto" first.');
+    throw new Error('@inaplight/birch-client not initialized. Import "@inaplight/birch-client/auto" first.');
   }
   return globalConfig;
 }

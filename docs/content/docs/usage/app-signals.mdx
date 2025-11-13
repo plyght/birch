@@ -171,7 +171,7 @@ async fn rotate_secret_on_rate_limit(secret_name: &str) -> Result<(), Box<dyn st
 For Node.js applications, use the [Birch SDK](/docs/sdk) instead of manual daemon calls:
 
 ```typescript
-import '@birch/client/auto';
+import '@inaplight/birch-client/auto';
 
 // Automatic rotation on 429 responses
 const response = await fetch(API_URL, {

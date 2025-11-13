@@ -63,7 +63,7 @@ configureBirch(options?: ConfigureOptions): Promise<void>
 **Example:**
 
 ```typescript
-import { configureBirch } from '@birch/client';
+import { configureBirch } from '@inaplight/birch-client';
 
 await configureBirch({
   daemonUrl: 'http://localhost:9123',
@@ -84,7 +84,7 @@ installFetchInterceptor(): void
 **Example:**
 
 ```typescript
-import { installFetchInterceptor } from '@birch/client';
+import { installFetchInterceptor } from '@inaplight/birch-client';
 
 installFetchInterceptor();
 ```
@@ -100,7 +100,7 @@ uninstallFetchInterceptor(): void
 **Example:**
 
 ```typescript
-import { uninstallFetchInterceptor } from '@birch/client';
+import { uninstallFetchInterceptor } from '@inaplight/birch-client';
 
 uninstallFetchInterceptor();
 ```
@@ -116,7 +116,7 @@ installAxiosInterceptor(): void
 **Example:**
 
 ```typescript
-import { installAxiosInterceptor } from '@birch/client';
+import { installAxiosInterceptor } from '@inaplight/birch-client';
 import axios from 'axios';
 
 installAxiosInterceptor();
@@ -143,7 +143,7 @@ Promise resolving to `RotateResult` with rotation status and new value.
 **Example:**
 
 ```typescript
-import { daemonClient } from '@birch/client';
+import { daemonClient } from '@inaplight/birch-client';
 
 const result = await daemonClient.rotate('TIKTOK_API_KEY');
 
@@ -168,7 +168,7 @@ Promise resolving to `true` if daemon is healthy, `false` otherwise.
 **Example:**
 
 ```typescript
-import { daemonClient } from '@birch/client';
+import { daemonClient } from '@inaplight/birch-client';
 
 const isHealthy = await daemonClient.checkHealth();
 
@@ -195,7 +195,7 @@ envTracker.trackRequest(url: string, headers: HeadersInit): void
 **Example:**
 
 ```typescript
-import { envTracker } from '@birch/client';
+import { envTracker } from '@inaplight/birch-client';
 
 envTracker.trackRequest(
   'https://api.tiktok.com/v1/videos',
@@ -222,7 +222,7 @@ Secret name if found, `undefined` otherwise.
 **Example:**
 
 ```typescript
-import { envTracker } from '@birch/client';
+import { envTracker } from '@inaplight/birch-client';
 
 const secretName = envTracker.getSecretName('https://api.tiktok.com/v1/videos');
 // Returns: 'TIKTOK_API_KEY' or undefined
@@ -239,7 +239,7 @@ envTracker.clear(): void
 **Example:**
 
 ```typescript
-import { envTracker } from '@birch/client';
+import { envTracker } from '@inaplight/birch-client';
 
 envTracker.clear();
 ```
@@ -249,7 +249,7 @@ envTracker.clear();
 The simplest way to use the SDK is with the auto import:
 
 ```typescript
-import '@birch/client/auto';
+import '@inaplight/birch-client/auto';
 ```
 
 This automatically:
@@ -267,7 +267,7 @@ import {
   configureBirch,
   daemonClient,
   envTracker
-} from '@birch/client';
+} from '@inaplight/birch-client';
 
 await configureBirch({ environment: 'production' });
 
