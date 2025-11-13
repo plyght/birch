@@ -4,8 +4,7 @@ import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
 
 export default function Home() {
-  const [user, setUser] = useState<any>(null)
-  const [workspaces, setWorkspaces] = useState<any[]>([])
+  const [user, setUser] = useState<{ email?: string } | null>(null)
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {

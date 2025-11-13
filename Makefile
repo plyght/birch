@@ -1,4 +1,4 @@
-.PHONY: build test clean install docker help build-all test-all build-cli test-cli build-sdk test-sdk build-docs check-bun check-cargo
+.PHONY: build test clean install docker help build-all test-all build-cli test-cli build-sdk test-sdk build-docs check-bun check-cargo lint-all lint-web lint-sdk check-all
 
 help:
 	@echo "Birch - Secret Rotation Tool"
@@ -7,6 +7,8 @@ help:
 	@echo "  Unified Commands:"
 	@echo "    build-all  - Build CLI + SDK + docs"
 	@echo "    test-all   - Run all tests (CLI + SDK)"
+	@echo "    lint-all   - Run all linters (Rust + TypeScript)"
+	@echo "    check-all  - Run fmt + lint + test (CI check)"
 	@echo ""
 	@echo "  CLI Commands:"
 	@echo "    build      - Build debug binary"
@@ -20,6 +22,10 @@ help:
 	@echo "  SDK Commands:"
 	@echo "    build-sdk  - Build TypeScript SDK"
 	@echo "    test-sdk   - Run SDK tests"
+	@echo "    lint-sdk   - Type-check TypeScript SDK"
+	@echo ""
+	@echo "  Web Commands:"
+	@echo "    lint-web   - Lint web dashboard (ESLint)"
 	@echo ""
 	@echo "  Docs Commands:"
 	@echo "    build-docs - Build documentation site"
@@ -112,6 +118,58 @@ fmt:
 
 lint:
 	cargo clippy -- -D warnings
+
+lint-web: check-bun
+	@echo "Linting web dashboard..."
+	@cd apps/web && bun run lint
+	@echo "✅ Web lint passed"
+
+lint-sdk: check-bun
+	@echo "Type-checking TypeScript SDK..."
+	@cd packages/client && bunx tsc --noEmit
+	@echo "✅ SDK type-check passed"
+
+lint-all: check-cargo check-bun
+	@echo "Running Rust linter..."
+	@cargo clippy -- -D warnings
+	@echo "✅ Rust lint passed"
+	@echo ""
+	@echo "Linting web dashboard..."
+	@cd apps/web && bun run lint
+	@echo "✅ Web lint passed"
+	@echo ""
+	@echo "Type-checking TypeScript SDK..."
+	@cd packages/client && bun run build
+	@echo "✅ SDK type-check passed"
+	@echo ""
+	@echo "✅ All linters passed"
+
+check-all: check-cargo check-bun
+	@echo "Running format check..."
+	@cargo fmt --check
+	@echo "✅ Format check passed"
+	@echo ""
+	@echo "Running Rust linter..."
+	@cargo clippy -- -D warnings
+	@echo "✅ Rust lint passed"
+	@echo ""
+	@echo "Running Rust tests..."
+	@cargo test
+	@echo "✅ Rust tests passed"
+	@echo ""
+	@echo "Linting web dashboard..."
+	@cd apps/web && bun run lint
+	@echo "✅ Web lint passed"
+	@echo ""
+	@echo "Type-checking TypeScript SDK..."
+	@cd packages/client && bun run build
+	@echo "✅ SDK type-check passed"
+	@echo ""
+	@echo "Running SDK tests..."
+	@cd packages/client && bun test
+	@echo "✅ SDK tests passed"
+	@echo ""
+	@echo "✅ All checks passed"
 
 dev: build
 	./target/debug/birch --help
