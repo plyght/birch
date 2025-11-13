@@ -37,27 +37,109 @@ struct CreateProviderConfigRequest {
 }
 
 pub async fn login(api_url: Option<String>) -> Result<()> {
-    let url = api_url.unwrap_or_else(|| "https://api.birch.sh".to_string());
+    let api_url_resolved = api_url.unwrap_or_else(|| "https://api.birch.sh".to_string());
+
+    // Determine dashboard URL from API URL
+    let dashboard_url =
+        if api_url_resolved.contains("localhost") || api_url_resolved.contains("127.0.0.1") {
+            // Local development
+            "http://localhost:3001".to_string()
+        } else {
+            // Production
+            "https://birch.sh".to_string()
+        };
 
     println!("Login to Birch SaaS");
-    println!("API URL: {}", url);
+    println!("API URL: {}", api_url_resolved);
+    println!("Dashboard URL: {}", dashboard_url);
     println!();
-    println!("Please provide your API key:");
 
-    let api_key = dialoguer::Input::<String>::new()
-        .with_prompt("API Key")
-        .interact_text()?;
+    // Generate random state token for CSRF protection
+    let state = uuid::Uuid::new_v4().to_string();
 
+    // Find an available port for callback server
+    let callback_port = 9124;
+    let callback_url = format!("http://localhost:{}/auth/callback", callback_port);
+
+    // Construct OAuth URL
+    let auth_url = format!(
+        "{}/auth/cli?state={}&callback={}",
+        dashboard_url,
+        urlencoding::encode(&state),
+        urlencoding::encode(&callback_url)
+    );
+
+    println!("Opening browser for authentication...");
+    println!();
+
+    // Open browser
+    if let Err(e) = open_browser(&auth_url) {
+        println!("Failed to open browser automatically: {}", e);
+        println!("Please open this URL in your browser:");
+        println!("{}", auth_url);
+        println!();
+    }
+
+    // Start callback server and wait for token
+    let token = crate::auth_callback::start_callback_server(state, callback_port)
+        .await?
+        .context("No token received from callback")?;
+
+    // Store JWT token in config
     let mut config = Config::load()?;
     config.mode = "saas".to_string();
-    config.saas_api_url = Some(url.clone());
-    config.saas_api_key = Some(api_key);
+    config.saas_api_url = Some(api_url_resolved.clone());
+    config.saas_jwt_token = Some(token);
+    // Clear old API key if present
+    config.saas_api_key = None;
     config.save()?;
 
+    println!();
     println!("✓ Successfully logged in to Birch SaaS");
-    println!("  API URL: {}", url);
+    println!("  API URL: {}", api_url_resolved);
+    println!();
+    println!("Run 'birch workspace list' to see your workspaces");
 
     Ok(())
+}
+
+fn open_browser(url: &str) -> Result<()> {
+    #[cfg(target_os = "macos")]
+    {
+        std::process::Command::new("open")
+            .arg(url)
+            .spawn()
+            .context("Failed to open browser")?;
+    }
+
+    #[cfg(target_os = "linux")]
+    {
+        std::process::Command::new("xdg-open")
+            .arg(url)
+            .spawn()
+            .context("Failed to open browser")?;
+    }
+
+    #[cfg(target_os = "windows")]
+    {
+        std::process::Command::new("cmd")
+            .args(&["/C", "start", url])
+            .spawn()
+            .context("Failed to open browser")?;
+    }
+
+    Ok(())
+}
+
+fn get_auth_token(config: &Config) -> Result<String> {
+    // Prefer JWT token over API key
+    if let Some(jwt_token) = &config.saas_jwt_token {
+        Ok(jwt_token.clone())
+    } else if let Some(api_key) = &config.saas_api_key {
+        Ok(api_key.clone())
+    } else {
+        anyhow::bail!("Not authenticated. Run 'birch login' first.");
+    }
 }
 
 pub async fn workspace_create(name: String) -> Result<()> {
@@ -67,13 +149,16 @@ pub async fn workspace_create(name: String) -> Result<()> {
         anyhow::bail!("Not in SaaS mode. Run 'birch login' first.");
     }
 
-    let api_url = config.saas_api_url.context("SaaS API URL not configured")?;
-    let api_key = config.saas_api_key.context("SaaS API key not configured")?;
+    let api_url = config
+        .saas_api_url
+        .clone()
+        .context("SaaS API URL not configured")?;
+    let auth_token = get_auth_token(&config)?;
 
     let client = reqwest::Client::new();
     let response = client
         .post(format!("{}/api/v1/workspaces", api_url))
-        .header("Authorization", format!("Bearer {}", api_key))
+        .header("Authorization", format!("Bearer {}", auth_token))
         .json(&CreateWorkspaceRequest { name: name.clone() })
         .send()
         .await?;
@@ -103,13 +188,16 @@ pub async fn workspace_list() -> Result<()> {
         anyhow::bail!("Not in SaaS mode. Run 'birch login' first.");
     }
 
-    let api_url = config.saas_api_url.context("SaaS API URL not configured")?;
-    let api_key = config.saas_api_key.context("SaaS API key not configured")?;
+    let api_url = config
+        .saas_api_url
+        .clone()
+        .context("SaaS API URL not configured")?;
+    let auth_token = get_auth_token(&config)?;
 
     let client = reqwest::Client::new();
     let response = client
         .get(format!("{}/api/v1/workspaces", api_url))
-        .header("Authorization", format!("Bearer {}", api_key))
+        .header("Authorization", format!("Bearer {}", auth_token))
         .send()
         .await?;
 
@@ -168,10 +256,14 @@ pub async fn provider_set(provider: String, mode: String) -> Result<()> {
 
     let workspace_id = config
         .saas_workspace_id
+        .clone()
         .context("No workspace selected. Run 'birch workspace select <id>' first.")?;
 
-    let api_url = config.saas_api_url.context("SaaS API URL not configured")?;
-    let api_key = config.saas_api_key.context("SaaS API key not configured")?;
+    let api_url = config
+        .saas_api_url
+        .clone()
+        .context("SaaS API URL not configured")?;
+    let auth_token = get_auth_token(&config)?;
 
     let client = reqwest::Client::new();
     let response = client
@@ -179,7 +271,7 @@ pub async fn provider_set(provider: String, mode: String) -> Result<()> {
             "{}/api/v1/workspaces/{}/providers",
             api_url, workspace_id
         ))
-        .header("Authorization", format!("Bearer {}", api_key))
+        .header("Authorization", format!("Bearer {}", auth_token))
         .json(&CreateProviderConfigRequest {
             provider: provider.clone(),
             mode: mode.clone(),
@@ -206,10 +298,14 @@ pub async fn provider_list() -> Result<()> {
 
     let workspace_id = config
         .saas_workspace_id
+        .clone()
         .context("No workspace selected. Run 'birch workspace select <id>' first.")?;
 
-    let api_url = config.saas_api_url.context("SaaS API URL not configured")?;
-    let api_key = config.saas_api_key.context("SaaS API key not configured")?;
+    let api_url = config
+        .saas_api_url
+        .clone()
+        .context("SaaS API URL not configured")?;
+    let auth_token = get_auth_token(&config)?;
 
     let client = reqwest::Client::new();
     let response = client
@@ -217,7 +313,7 @@ pub async fn provider_list() -> Result<()> {
             "{}/api/v1/workspaces/{}/providers",
             api_url, workspace_id
         ))
-        .header("Authorization", format!("Bearer {}", api_key))
+        .header("Authorization", format!("Bearer {}", auth_token))
         .send()
         .await?;
 
@@ -250,18 +346,18 @@ pub async fn resolve_credential(provider: &str, secret_name: &str) -> Result<Opt
     }
 
     let workspace_id = match config.saas_workspace_id {
-        Some(id) => id,
+        Some(ref id) => id.clone(),
         None => return Ok(None),
     };
 
     let api_url = match config.saas_api_url {
-        Some(url) => url,
+        Some(ref url) => url.clone(),
         None => return Ok(None),
     };
 
-    let api_key = match config.saas_api_key {
-        Some(key) => key,
-        None => return Ok(None),
+    let auth_token = match get_auth_token(&config) {
+        Ok(token) => token,
+        Err(_) => return Ok(None),
     };
 
     let client = reqwest::Client::new();
@@ -270,7 +366,7 @@ pub async fn resolve_credential(provider: &str, secret_name: &str) -> Result<Opt
             "{}/api/v1/workspaces/{}/credentials/{}/{}",
             api_url, workspace_id, provider, secret_name
         ))
-        .header("Authorization", format!("Bearer {}", api_key))
+        .header("Authorization", format!("Bearer {}", auth_token))
         .send()
         .await?;
 

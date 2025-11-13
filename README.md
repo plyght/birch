@@ -42,8 +42,30 @@ Birch SaaS extends the open-source CLI with policy orchestration, team collabora
 
 ### Quick Start
 
+#### Development Environment
+
+Start all services (Redis, API, Dashboard) with one command:
+
 ```bash
-birch login
+# Option 1: Using bun (recommended)
+bun run dev
+
+# Option 2: Using shell script directly
+./dev.sh
+
+# Option 3: Using Make
+make dev-saas
+```
+
+This will start:
+- **Redis**: `localhost:6379`
+- **API**: `http://localhost:3000`
+- **Dashboard**: `http://localhost:3001`
+
+#### Using the CLI
+
+```bash
+birch login http://localhost:3000
 birch workspace create "My Team"
 birch provider set vercel --mode hosted
 ```

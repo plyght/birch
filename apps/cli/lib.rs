@@ -1,4 +1,5 @@
 pub mod audit;
+pub mod auth_callback;
 pub mod cli;
 pub mod config;
 pub mod connectors;

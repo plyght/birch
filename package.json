@@ -1,0 +1,12 @@
+{
+  "name": "birch",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "bun run dev.ts",
+    "dev:redis": "docker run --rm --name birch-redis -p 6379:6379 redis:alpine",
+    "dev:api": "cd apps/api && export $(cat .env | grep -v '^#' | xargs) && cargo run --bin birch-api",
+    "dev:web": "cd apps/web && bun dev"
+  }
+}
+

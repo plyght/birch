@@ -20,9 +20,14 @@ pub struct AppState {
     pub vault: Arc<VaultStorage>,
     pub resolver: Arc<tokio::sync::Mutex<CredentialResolver>>,
     pub metering: Arc<MeteringService>,
+    pub jwt_secret: String,
 }
 
-pub async fn create_router(client: SupabaseClient, redis_url: String) -> anyhow::Result<Router> {
+pub async fn create_router(
+    client: SupabaseClient,
+    redis_url: String,
+    jwt_secret: String,
+) -> anyhow::Result<Router> {
     let encryption = VaultEncryption::new()?;
     let vault = Arc::new(VaultStorage::new(client.clone(), encryption));
 
@@ -41,6 +46,7 @@ pub async fn create_router(client: SupabaseClient, redis_url: String) -> anyhow:
         vault,
         resolver,
         metering,
+        jwt_secret,
     };
 
     Ok(Router::new()

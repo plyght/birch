@@ -1,4 +1,5 @@
 mod audit;
+mod auth_callback;
 mod cli;
 mod config;
 mod connectors;

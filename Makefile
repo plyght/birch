@@ -174,3 +174,11 @@ check-all: check-cargo check-bun
 dev: build
 	./target/debug/birch --help
 
+dev-saas: check-bun
+	@echo "Starting Birch SaaS development environment"
+	@echo "Redis: localhost:6379"
+	@echo "API: http://localhost:3000"
+	@echo "Dashboard: http://localhost:3001"
+	@echo ""
+	@./dev.sh
+

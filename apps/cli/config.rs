@@ -36,6 +36,12 @@ pub struct Config {
     pub saas_api_key: Option<String>,
 
     #[serde(default)]
+    pub saas_jwt_token: Option<String>,
+
+    #[serde(default)]
+    pub saas_user_id: Option<String>,
+
+    #[serde(default)]
     pub saas_workspace_id: Option<String>,
 }
 
@@ -102,6 +108,8 @@ impl Default for Config {
             mode: default_mode(),
             saas_api_url: None,
             saas_api_key: None,
+            saas_jwt_token: None,
+            saas_user_id: None,
             saas_workspace_id: None,
         }
     }
@@ -239,6 +247,14 @@ impl Config {
 
         if let Ok(val) = std::env::var("BIRCH_SAAS_API_KEY") {
             self.saas_api_key = Some(val);
+        }
+
+        if let Ok(val) = std::env::var("BIRCH_SAAS_JWT_TOKEN") {
+            self.saas_jwt_token = Some(val);
+        }
+
+        if let Ok(val) = std::env::var("BIRCH_SAAS_USER_ID") {
+            self.saas_user_id = Some(val);
         }
 
         if let Ok(val) = std::env::var("BIRCH_SAAS_WORKSPACE_ID") {

@@ -16,10 +16,11 @@ async fn main() -> Result<()> {
 
     let database_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
     let redis_url = env::var("REDIS_URL").expect("REDIS_URL must be set");
+    let jwt_secret = env::var("JWT_SECRET").expect("JWT_SECRET must be set");
 
     let supabase_client = SupabaseClient::new(&database_url).await?;
 
-    let app = create_router(supabase_client, redis_url)
+    let app = create_router(supabase_client, redis_url, jwt_secret)
         .await?
         .layer(CorsLayer::permissive())
         .layer(TraceLayer::new_for_http());
