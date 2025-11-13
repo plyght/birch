@@ -1,5 +1,5 @@
 use axum::{
-    extract::{Path, State},
+    extract::{Path, Query, State},
     http::StatusCode,
     Json,
 };
@@ -8,9 +8,36 @@ use uuid::Uuid;
 
 use crate::{api::routes::AppState, workspace::models::Workspace};
 
+fn validate_workspace_name(name: &str) -> Result<(), StatusCode> {
+    let trimmed = name.trim();
+    if trimmed.is_empty() {
+        return Err(StatusCode::BAD_REQUEST);
+    }
+    if trimmed.len() > 100 {
+        return Err(StatusCode::BAD_REQUEST);
+    }
+    Ok(())
+}
+
 #[derive(Debug, Deserialize)]
 pub struct CreateWorkspaceRequest {
     pub name: String,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct ListWorkspacesQuery {
+    #[serde(default = "default_page")]
+    pub page: i64,
+    #[serde(default = "default_limit")]
+    pub limit: i64,
+}
+
+fn default_page() -> i64 {
+    0
+}
+
+fn default_limit() -> i64 {
+    20
 }
 
 #[derive(Debug, Serialize)]
@@ -22,6 +49,8 @@ pub async fn create_workspace(
     State(state): State<AppState>,
     Json(req): Json<CreateWorkspaceRequest>,
 ) -> Result<Json<WorkspaceResponse>, StatusCode> {
+    validate_workspace_name(&req.name)?;
+
     let db_client = state
         .client
         .get_client()
@@ -62,6 +91,7 @@ pub async fn create_workspace(
 
 pub async fn list_workspaces(
     State(state): State<AppState>,
+    Query(query): Query<ListWorkspacesQuery>,
 ) -> Result<Json<Vec<Workspace>>, StatusCode> {
     let db_client = state
         .client
@@ -69,26 +99,40 @@ pub async fn list_workspaces(
         .await
         .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
 
+    let limit = query.limit.max(1).min(100);
+    let offset = query.page.max(0) * limit;
+
     let stmt = db_client
-        .prepare("SELECT id, name, plan_tier, created_at, updated_at FROM workspaces")
+        .prepare(
+            "SELECT id, name, plan_tier, created_at, updated_at 
+             FROM workspaces 
+             ORDER BY created_at DESC 
+             LIMIT $1 OFFSET $2",
+        )
         .await
         .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
 
     let rows = db_client
-        .query(&stmt, &[])
+        .query(&stmt, &[&limit, &offset])
         .await
         .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
 
     let workspaces: Vec<Workspace> = rows
         .iter()
-        .map(|row| Workspace {
-            id: row.get(0),
-            name: row.get(1),
-            plan_tier: row.get::<_, String>(2).parse().unwrap(),
-            created_at: row.get(3),
-            updated_at: row.get(4),
+        .map(|row| {
+            let plan_tier = row
+                .get::<_, String>(2)
+                .parse()
+                .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+            Ok(Workspace {
+                id: row.get(0),
+                name: row.get(1),
+                plan_tier,
+                created_at: row.get(3),
+                updated_at: row.get(4),
+            })
         })
-        .collect();
+        .collect::<Result<Vec<_>, StatusCode>>()?;
 
     Ok(Json(workspaces))
 }
@@ -146,6 +190,8 @@ pub async fn update_workspace(
         .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
 
     if let Some(name) = req.name {
+        validate_workspace_name(&name)?;
+
         let stmt = db_client
             .prepare(
                 "UPDATE workspaces SET name = $2, updated_at = NOW()
@@ -160,10 +206,15 @@ pub async fn update_workspace(
             .await
             .map_err(|_| StatusCode::NOT_FOUND)?;
 
+        let plan_tier = row
+            .get::<_, String>(2)
+            .parse()
+            .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+
         let workspace = Workspace {
             id: row.get(0),
             name: row.get(1),
-            plan_tier: row.get::<_, String>(2).parse().unwrap(),
+            plan_tier,
             created_at: row.get(3),
             updated_at: row.get(4),
         };

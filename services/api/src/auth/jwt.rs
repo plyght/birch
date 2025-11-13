@@ -24,6 +24,9 @@ impl JwtValidator {
         let mut validation = Validation::default();
         validation.validate_exp = true;
         validation.algorithms = vec![jsonwebtoken::Algorithm::HS256];
+        // Uncomment and configure if your JWT includes iss/aud claims:
+        // validation.set_issuer(&["your-auth-issuer"]);
+        // validation.set_audience(&["your-api-audience"]);
 
         let token_data = decode::<Claims>(
             token,

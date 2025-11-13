@@ -102,7 +102,7 @@ install: release
 	@echo "Installed to /usr/local/bin/birch"
 
 docker:
-	docker build -t birch:latest .
+	docker build -f services/api/Dockerfile -t birch:latest .
 
 dist:
 	./build.sh

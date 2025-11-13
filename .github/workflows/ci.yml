@@ -134,4 +134,4 @@ jobs:
       uses: docker/setup-buildx-action@v3
     
     - name: Build Docker image
-      run: docker build -t birch:latest .
+      run: docker build -f services/api/Dockerfile -t birch:latest .
