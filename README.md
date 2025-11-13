@@ -31,12 +31,12 @@ Most teams handle secret rotation with ad-hoc scripts, manual processes, or heav
 - **SaaS - Customer-Managed** - OAuth/KMS/API integration, credentials stay in your infrastructure
 
 **Features:**
-- 🔐 Flexible credential modes per provider
-- 👥 Team collaboration with RBAC (Owner/Admin/Operator/Viewer/Auditor)
-- 📊 Policy engine with approval workflows
-- 📈 Usage metering and billing
-- 🔍 Enhanced audit logs and compliance reporting
-- 🏢 Enterprise: SSO/SCIM, customer-managed keys, SLA
+- Flexible credential modes per provider
+- Team collaboration with RBAC (Owner/Admin/Operator/Viewer/Auditor)
+- Policy engine with approval workflows
+- Usage metering and billing
+- Enhanced audit logs and compliance reporting
+- Enterprise: SSO/SCIM, customer-managed keys, SLA
 
 **Quick start:**
 ```bash
