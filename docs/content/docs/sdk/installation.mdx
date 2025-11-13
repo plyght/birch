@@ -1,0 +1,63 @@
+---
+title: Installation
+description: Install the Birch SDK package
+---
+
+## npm
+
+```bash
+npm install @birch/client
+```
+
+## Bun
+
+```bash
+bun add @birch/client
+```
+
+## yarn
+
+```bash
+yarn add @birch/client
+```
+
+## pnpm
+
+```bash
+pnpm add @birch/client
+```
+
+## Package Information
+
+- **Package name**: `@birch/client`
+- **Version**: Check [npm](https://www.npmjs.com/package/@birch/client) for latest version
+- **TypeScript**: Full TypeScript support included
+- **Node.js**: Requires Node.js 18 or higher
+
+## Verify Installation
+
+After installation, verify the package is installed correctly:
+
+```bash
+npm list @birch/client
+```
+
+You should see the package listed with its version.
+
+## TypeScript Support
+
+The SDK includes full TypeScript definitions. No additional `@types` package needed.
+
+```typescript
+import { configureBirch, daemonClient } from '@birch/client';
+
+// All types are available
+const result: RotateResult = await daemonClient.rotate('MY_KEY');
+```
+
+## Next Steps
+
+- [Get started](/docs/sdk/getting-started) with the SDK
+- [Configure](/docs/sdk/configuration) for your environment
+- [Read the API reference](/docs/sdk/api-reference) for advanced usage
+

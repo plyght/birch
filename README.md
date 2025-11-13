@@ -111,6 +111,32 @@ if (response.status === 429) {
 
 See [Key Pool Documentation](./docs/content/docs/usage/key-pools.mdx) for details.
 
+### Zero-Config SDK
+
+For even simpler integration, use the `@birch/client` SDK that automatically handles rate limits:
+
+```bash
+npm install @birch/client
+```
+
+```typescript
+import '@birch/client/auto';
+
+const response = await fetch('https://api.tiktok.com/v1/videos', {
+  headers: {
+    Authorization: `Bearer ${process.env.TIKTOK_API_KEY}`
+  }
+});
+```
+
+That's it! The SDK automatically:
+- Detects which API keys are being used
+- Intercepts 429 responses
+- Rotates to the next key in the pool
+- Retries the request immediately
+
+Works with Next.js, Express, vanilla Node.js, and any framework. See [SDK Documentation](./docs/content/docs/sdk.mdx) for details.
+
 ## Configuration
 
 Edit `~/.birch/config.toml`:

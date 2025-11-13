@@ -29,6 +29,8 @@ pub struct RotateResponse {
     message: String,
     #[serde(skip_serializing_if = "Option::is_none")]
     pool_status: Option<PoolStatus>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    new_value: Option<String>,
 }
 
 #[derive(Debug, Serialize)]
@@ -83,6 +85,7 @@ async fn handle_rotate(
                             success: false,
                             message: format!("Failed to load config: {}", e),
                             pool_status: None,
+                            new_value: None,
                         }),
                     );
                 }
@@ -98,6 +101,7 @@ async fn handle_rotate(
                             config.cooldown_seconds as i64 - elapsed.num_seconds()
                         ),
                         pool_status: None,
+                        new_value: None,
                     }),
                 );
             }
@@ -114,6 +118,7 @@ async fn handle_rotate(
                 success: false,
                 message: "Signal debounced".to_string(),
                 pool_status: None,
+                new_value: None,
             }),
         );
     }
@@ -127,6 +132,7 @@ async fn handle_rotate(
                     success: false,
                     message: format!("Failed to initialize audit logger: {}", e),
                     pool_status: None,
+                    new_value: None,
                 }),
             );
         }
@@ -143,15 +149,19 @@ async fn handle_rotate(
         tracing::error!("Failed to log signal: {}", e);
     }
 
-    let pool_status = if let Ok(Some(pool)) = KeyPool::load(&payload.secret_name) {
-        Some(PoolStatus {
+    let (pool_status, new_value) = if let Ok(Some(mut pool)) = KeyPool::load(&payload.secret_name) {
+        let status = Some(PoolStatus {
             total_keys: pool.keys.len(),
             available_keys: pool.count_available(),
             exhausted_keys: pool.count_exhausted(),
             current_index: pool.current_index,
-        })
+        });
+        
+        let next_value = pool.get_next_available().ok();
+        
+        (status, next_value)
     } else {
-        None
+        (None, None)
     };
 
     tokio::spawn(async move {
@@ -178,6 +188,7 @@ async fn handle_rotate(
             success: true,
             message: "Rotation queued".to_string(),
             pool_status,
+            new_value,
         }),
     )
 }
@@ -202,6 +213,7 @@ async fn handle_rollback(
                             success: false,
                             message: format!("Failed to load config: {}", e),
                             pool_status: None,
+                            new_value: None,
                         }),
                     );
                 }
@@ -217,6 +229,7 @@ async fn handle_rollback(
                             config.cooldown_seconds as i64 - elapsed.num_seconds()
                         ),
                         pool_status: None,
+                        new_value: None,
                     }),
                 );
             }
@@ -233,6 +246,7 @@ async fn handle_rollback(
                 success: false,
                 message: "Signal debounced".to_string(),
                 pool_status: None,
+                new_value: None,
             }),
         );
     }
@@ -246,6 +260,7 @@ async fn handle_rollback(
                     success: false,
                     message: format!("Failed to initialize audit logger: {}", e),
                     pool_status: None,
+                    new_value: None,
                 }),
             );
         }
@@ -283,6 +298,7 @@ async fn handle_rollback(
             success: true,
             message: "Rollback queued".to_string(),
             pool_status: None,
+            new_value: None,
         }),
     )
 }

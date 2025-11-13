@@ -1,0 +1,308 @@
+---
+title: API Reference
+description: Complete API reference for the Birch SDK
+---
+
+## Types
+
+### BirchConfig
+
+```typescript
+interface BirchConfig {
+  daemonUrl: string;
+  environment: string;
+  service?: string;
+  enabled: boolean;
+  debug?: boolean;
+}
+```
+
+### RotateResult
+
+```typescript
+interface RotateResult {
+  success: boolean;
+  new_value?: string;
+  pool_status?: PoolStatus;
+  message?: string;
+}
+```
+
+### PoolStatus
+
+```typescript
+interface PoolStatus {
+  total_keys: number;
+  available_keys: number;
+  exhausted_keys: number;
+  current_index: number;
+}
+```
+
+### ConfigureOptions
+
+```typescript
+interface ConfigureOptions {
+  daemonUrl?: string;
+  environment?: string;
+  service?: string;
+  debug?: boolean;
+}
+```
+
+## Functions
+
+### configureBirch
+
+Configure the SDK programmatically.
+
+```typescript
+configureBirch(options?: ConfigureOptions): Promise<void>
+```
+
+**Example:**
+
+```typescript
+import { configureBirch } from '@birch/client';
+
+await configureBirch({
+  daemonUrl: 'http://localhost:9123',
+  environment: 'production',
+  service: 'vercel',
+  debug: true
+});
+```
+
+### installFetchInterceptor
+
+Install the fetch interceptor for automatic rotation.
+
+```typescript
+installFetchInterceptor(): void
+```
+
+**Example:**
+
+```typescript
+import { installFetchInterceptor } from '@birch/client';
+
+installFetchInterceptor();
+```
+
+### uninstallFetchInterceptor
+
+Uninstall the fetch interceptor.
+
+```typescript
+uninstallFetchInterceptor(): void
+```
+
+**Example:**
+
+```typescript
+import { uninstallFetchInterceptor } from '@birch/client';
+
+uninstallFetchInterceptor();
+```
+
+### installAxiosInterceptor
+
+Install the axios interceptor for automatic rotation.
+
+```typescript
+installAxiosInterceptor(): void
+```
+
+**Example:**
+
+```typescript
+import { installAxiosInterceptor } from '@birch/client';
+import axios from 'axios';
+
+installAxiosInterceptor();
+```
+
+## Daemon Client
+
+### daemonClient.rotate
+
+Rotate a secret using the daemon.
+
+```typescript
+daemonClient.rotate(secretName: string): Promise<RotateResult>
+```
+
+**Parameters:**
+
+- `secretName` (string): Name of the secret to rotate (e.g., `TIKTOK_API_KEY`)
+
+**Returns:**
+
+Promise resolving to `RotateResult` with rotation status and new value.
+
+**Example:**
+
+```typescript
+import { daemonClient } from '@birch/client';
+
+const result = await daemonClient.rotate('TIKTOK_API_KEY');
+
+if (result.success && result.new_value) {
+  console.log('Rotated to new key:', result.new_value.slice(-4));
+  console.log('Pool status:', result.pool_status);
+}
+```
+
+### daemonClient.checkHealth
+
+Check if the daemon is available.
+
+```typescript
+daemonClient.checkHealth(): Promise<boolean>
+```
+
+**Returns:**
+
+Promise resolving to `true` if daemon is healthy, `false` otherwise.
+
+**Example:**
+
+```typescript
+import { daemonClient } from '@birch/client';
+
+const isHealthy = await daemonClient.checkHealth();
+
+if (!isHealthy) {
+  console.error('Birch daemon is not available');
+}
+```
+
+## Environment Tracker
+
+### envTracker.trackRequest
+
+Track a request to detect which environment variable is being used.
+
+```typescript
+envTracker.trackRequest(url: string, headers: HeadersInit): void
+```
+
+**Parameters:**
+
+- `url` (string): Request URL
+- `headers` (HeadersInit): Request headers
+
+**Example:**
+
+```typescript
+import { envTracker } from '@birch/client';
+
+envTracker.trackRequest(
+  'https://api.tiktok.com/v1/videos',
+  { Authorization: `Bearer ${process.env.TIKTOK_API_KEY}` }
+);
+```
+
+### envTracker.getSecretName
+
+Get the secret name for a URL.
+
+```typescript
+envTracker.getSecretName(url: string): string | undefined
+```
+
+**Parameters:**
+
+- `url` (string): Request URL
+
+**Returns:**
+
+Secret name if found, `undefined` otherwise.
+
+**Example:**
+
+```typescript
+import { envTracker } from '@birch/client';
+
+const secretName = envTracker.getSecretName('https://api.tiktok.com/v1/videos');
+// Returns: 'TIKTOK_API_KEY' or undefined
+```
+
+### envTracker.clear
+
+Clear all tracked mappings.
+
+```typescript
+envTracker.clear(): void
+```
+
+**Example:**
+
+```typescript
+import { envTracker } from '@birch/client';
+
+envTracker.clear();
+```
+
+## Auto Import
+
+The simplest way to use the SDK is with the auto import:
+
+```typescript
+import '@birch/client/auto';
+```
+
+This automatically:
+- Configures the SDK with defaults
+- Installs fetch interceptor
+- Sets up automatic rotation handling
+
+## Manual Mode
+
+For fine-grained control, use individual functions:
+
+```typescript
+import { 
+  installFetchInterceptor,
+  configureBirch,
+  daemonClient,
+  envTracker
+} from '@birch/client';
+
+await configureBirch({ environment: 'production' });
+
+installFetchInterceptor();
+
+const result = await daemonClient.rotate('TIKTOK_API_KEY');
+if (result.success && result.new_value) {
+  console.log('Rotated to new key:', result.new_value.slice(-4));
+}
+```
+
+## Error Handling
+
+The SDK handles errors gracefully:
+
+- **Daemon unavailable**: Returns 429 normally, no rotation attempted
+- **Pool exhausted**: Returns error in `RotateResult.message`
+- **Invalid secret name**: Returns error in `RotateResult.message`
+
+Always check `result.success` before using `result.new_value`:
+
+```typescript
+const result = await daemonClient.rotate('MY_KEY');
+
+if (!result.success) {
+  console.error('Rotation failed:', result.message);
+  return;
+}
+
+console.log('New key:', result.new_value);
+```
+
+## Next Steps
+
+- [See examples](/docs/sdk/examples) of API usage
+- [Read framework guides](/docs/sdk/frameworks) for framework-specific patterns
+- [Configure the SDK](/docs/sdk/configuration) for your environment
+

@@ -68,10 +68,8 @@ birch pool <ACTION>
 ## Detailed Workflows
 
 <Cards>
-  <Card title="Development Rotation" href="/docs/usage/dev-mode" />
-  <Card title="Production Rotation" href="/docs/usage/prod-mode" />
-  <Card title="App-Signal Rotation" href="/docs/usage/app-signals" />
-  <Card title="Rollback Procedures" href="/docs/usage/rollback" />
+  <Card title="App-Signal Rotation" href="/docs/usage/app-signals" description="Trigger rotation from your application" />
+  <Card title="Key Pools" href="/docs/usage/key-pools" description="Automatic rotation with multiple keys" />
 </Cards>
 
 ## Safety Features
@@ -138,7 +136,7 @@ Key pools allow you to pre-configure multiple API keys for automatic rotation. W
 
 ### Setting Up a Key Pool
 
-#### 1. Create the Pool
+#### Create the Pool
 
 ```bash
 # Create pool with inline keys
@@ -148,7 +146,7 @@ birch pool init TIKTOK_API_KEY --keys "sk_key1,sk_key2,sk_key3"
 birch pool init TIKTOK_API_KEY --from-file ./tiktok-keys.txt
 ```
 
-#### 2. Check Pool Status
+#### Check Pool Status
 
 ```bash
 birch pool status TIKTOK_API_KEY
@@ -158,7 +156,7 @@ birch pool status TIKTOK_API_KEY
 # Available:       3 (100%)
 ```
 
-#### 3. Rotate Using Pool
+#### Rotate Using Pool
 
 When you rotate, Birch automatically uses the pool:
 
@@ -297,8 +295,24 @@ if [ "$DAYS_UNTIL_EXPIRY" -lt 7 ]; then
 fi
 ```
 
+## Using the SDK
+
+For automatic rotation in Node.js applications, use the [Birch SDK](/docs/sdk) instead of manual daemon calls:
+
+```typescript
+import '@birch/client/auto';
+
+// Automatic rotation on 429 responses
+const response = await fetch(API_URL, {
+  headers: { Authorization: `Bearer ${process.env.API_KEY}` }
+});
+```
+
+See the [SDK documentation](/docs/sdk) for complete setup and examples.
+
 ## Next Steps
 
+- [Set up the SDK](/docs/sdk) for automatic rotation in your applications
 - [Learn about specific providers](/docs/connectors)
 - [Read the operator runbook](/docs/operators/runbook)
 - [Implement app-signal rotation](/docs/usage/app-signals)

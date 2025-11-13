@@ -1,0 +1,322 @@
+---
+title: Examples
+description: Code examples and patterns for using the Birch SDK
+---
+
+## Basic Usage
+
+### Auto Import (Recommended)
+
+The simplest way to use the SDK:
+
+```typescript
+import '@birch/client/auto';
+
+const response = await fetch('https://api.tiktok.com/v1/videos', {
+  headers: {
+    Authorization: `Bearer ${process.env.TIKTOK_API_KEY}`
+  }
+});
+```
+
+## Framework Examples
+
+### Next.js App Router
+
+```typescript
+// app/layout.tsx
+import '@birch/client/auto';
+
+export default function RootLayout({ children }) {
+  return <html><body>{children}</body></html>;
+}
+```
+
+```typescript
+// app/api/tiktok/route.ts
+export async function GET() {
+  const response = await fetch('https://api.tiktok.com/v1/videos', {
+    headers: {
+      Authorization: `Bearer ${process.env.TIKTOK_API_KEY}`
+    }
+  });
+  
+  return Response.json(await response.json());
+}
+```
+
+### Express
+
+```typescript
+import '@birch/client/auto';
+import express from 'express';
+
+const app = express();
+
+app.get('/tweets', async (req, res) => {
+  const response = await fetch('https://api.twitter.com/2/tweets', {
+    headers: {
+      Authorization: `Bearer ${process.env.TWITTER_API_KEY}`
+    }
+  });
+  
+  res.json(await response.json());
+});
+
+app.listen(3000);
+```
+
+### Standalone Script
+
+```typescript
+import '@birch/client/auto';
+
+async function main() {
+  const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      model: 'gpt-4',
+      messages: [{ role: 'user', content: 'Hello!' }]
+    })
+  });
+  
+  console.log(await response.json());
+}
+
+main();
+```
+
+## HTTP Client Examples
+
+### fetch (Native)
+
+Works automatically with Node.js native `fetch()` or `node-fetch`:
+
+```typescript
+import '@birch/client/auto';
+
+await fetch(url, { 
+  headers: { 
+    Authorization: `Bearer ${process.env.API_KEY}` 
+  } 
+});
+```
+
+### axios
+
+Automatically detects and patches axios:
+
+```typescript
+import '@birch/client/auto';
+import axios from 'axios';
+
+await axios.get(url, {
+  headers: { 
+    Authorization: `Bearer ${process.env.API_KEY}` 
+  }
+});
+```
+
+### Other Clients
+
+The SDK monkey-patches `globalThis.fetch`, so any HTTP client that uses fetch under the hood will work automatically.
+
+## Manual Mode Examples
+
+### Manual Configuration
+
+```typescript
+import { configureBirch, installFetchInterceptor } from '@birch/client';
+
+await configureBirch({
+  daemonUrl: 'http://localhost:9123',
+  environment: 'production',
+  service: 'vercel',
+  debug: true
+});
+
+installFetchInterceptor();
+```
+
+### Manual Rotation
+
+```typescript
+import { daemonClient } from '@birch/client';
+
+const result = await daemonClient.rotate('TIKTOK_API_KEY');
+
+if (result.success && result.new_value) {
+  console.log('Rotated to new key:', result.new_value.slice(-4));
+  console.log('Pool status:', result.pool_status);
+}
+```
+
+### Health Check
+
+```typescript
+import { daemonClient } from '@birch/client';
+
+const isHealthy = await daemonClient.checkHealth();
+
+if (!isHealthy) {
+  console.error('Birch daemon is not available');
+  // Handle fallback behavior
+}
+```
+
+## Error Handling Examples
+
+### Check Rotation Result
+
+```typescript
+import { daemonClient } from '@birch/client';
+
+const result = await daemonClient.rotate('MY_API_KEY');
+
+if (!result.success) {
+  console.error('Rotation failed:', result.message);
+  
+  if (result.message?.includes('pool exhausted')) {
+    // Handle pool exhaustion
+    console.error('All keys in pool are exhausted');
+  }
+  
+  return;
+}
+
+console.log('Successfully rotated to:', result.new_value);
+```
+
+### Graceful Degradation
+
+```typescript
+import '@birch/client/auto';
+
+async function makeApiCall() {
+  try {
+    const response = await fetch(API_URL, {
+      headers: {
+        Authorization: `Bearer ${process.env.API_KEY}`
+      }
+    });
+    
+    if (!response.ok) {
+      throw new Error(`API error: ${response.status}`);
+    }
+    
+    return await response.json();
+  } catch (error) {
+    // SDK handles 429 automatically, but you can add custom handling
+    console.error('API call failed:', error);
+    throw error;
+  }
+}
+```
+
+## Environment Setup Examples
+
+### Development
+
+```bash
+# .env.local
+TIKTOK_API_KEY=sk_dev_abc123
+TWITTER_API_KEY=xoxb_dev_xyz789
+BIRCH_DEBUG=true
+```
+
+```bash
+birch daemon start
+birch pool init TIKTOK_API_KEY --keys "key1,key2,key3"
+
+npm run dev
+```
+
+### Production
+
+```bash
+# Set environment variables in your hosting provider
+vercel env add TIKTOK_API_KEY
+vercel env add BIRCH_ENV production
+
+birch pool init TIKTOK_API_KEY --keys "prod_key1,prod_key2,prod_key3"
+
+vercel deploy
+```
+
+## Advanced Examples
+
+### Custom Retry Logic
+
+```typescript
+import '@birch/client/auto';
+
+async function fetchWithRetry(url: string, maxRetries = 3) {
+  for (let i = 0; i < maxRetries; i++) {
+    try {
+      const response = await fetch(url, {
+        headers: {
+          Authorization: `Bearer ${process.env.API_KEY}`
+        }
+      });
+      
+      if (response.status === 429 && i < maxRetries - 1) {
+        // SDK handles rotation automatically, but wait before retry
+        await new Promise(resolve => setTimeout(resolve, 1000 * (i + 1)));
+        continue;
+      }
+      
+      return response;
+    } catch (error) {
+      if (i === maxRetries - 1) throw error;
+      await new Promise(resolve => setTimeout(resolve, 1000 * (i + 1)));
+    }
+  }
+}
+```
+
+### Multiple API Keys
+
+```typescript
+import '@birch/client/auto';
+
+async function callMultipleApis() {
+  const [tiktok, twitter, openai] = await Promise.all([
+    fetch('https://api.tiktok.com/v1/videos', {
+      headers: { Authorization: `Bearer ${process.env.TIKTOK_API_KEY}` }
+    }),
+    fetch('https://api.twitter.com/2/tweets', {
+      headers: { Authorization: `Bearer ${process.env.TWITTER_API_KEY}` }
+    }),
+    fetch('https://api.openai.com/v1/chat/completions', {
+      headers: { Authorization: `Bearer ${process.env.OPENAI_API_KEY}` }
+    })
+  ]);
+  
+  return {
+    tiktok: await tiktok.json(),
+    twitter: await twitter.json(),
+    openai: await openai.json()
+  };
+}
+```
+
+## Full Example Applications
+
+Complete example applications are available in the repository:
+
+- **Next.js App Router**: [`packages/client/examples/nextjs-app`](https://github.com/your-org/birch/tree/main/packages/client/examples/nextjs-app)
+- **Express API**: [`packages/client/examples/express-api`](https://github.com/your-org/birch/tree/main/packages/client/examples/express-api)
+- **CLI Script**: [`packages/client/examples/cli-script`](https://github.com/your-org/birch/tree/main/packages/client/examples/cli-script)
+
+Each example includes a README with setup instructions.
+
+## Next Steps
+
+- [Read framework guides](/docs/sdk/frameworks) for detailed framework-specific examples
+- [See API reference](/docs/sdk/api-reference) for complete function documentation
+- [Configure the SDK](/docs/sdk/configuration) for your environment
+

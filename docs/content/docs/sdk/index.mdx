@@ -1,0 +1,76 @@
+---
+title: SDK Overview
+description: Zero-config automatic API key rotation SDK for Node.js applications
+---
+
+import { Card, Cards } from 'fumadocs-ui/components/card';
+
+The Birch SDK (`@birch/client`) provides zero-intrusion automatic API key rotation for your Node.js applications. Simply add one import and your existing code will automatically handle rate limits and rotate keys.
+
+## Features
+
+- **Zero Configuration**: Single import enables automatic rotation
+- **Zero Intrusion**: Works with existing `fetch()`, `axios`, and other HTTP clients
+- **Automatic Detection**: Detects which API keys are being used
+- **429 Handling**: Automatically rotates on rate limit responses
+- **Immediate Retry**: Retries failed requests with new keys
+- **Pool Support**: Manages multiple keys for each API
+- **Works Everywhere**: Dev, staging, and production
+- **Debug Mode**: Optional verbose logging
+
+## Quick Start
+
+```typescript
+import '@birch/client/auto';
+
+const response = await fetch('https://api.tiktok.com/v1/videos', {
+  headers: {
+    Authorization: `Bearer ${process.env.TIKTOK_API_KEY}`
+  }
+});
+```
+
+That's it! The SDK automatically:
+- Detects which API keys are being used
+- Intercepts 429 (rate limit) responses
+- Calls the Birch daemon to rotate keys
+- Retries the request with a new key
+
+## Documentation
+
+<Cards>
+  <Card title="Getting Started" href="/docs/sdk/getting-started" description="Quick setup guide" />
+  <Card title="Installation" href="/docs/sdk/installation" description="Install the SDK package" />
+  <Card title="Configuration" href="/docs/sdk/configuration" description="Configure the SDK" />
+  <Card title="API Reference" href="/docs/sdk/api-reference" description="Complete API documentation" />
+  <Card title="Examples" href="/docs/sdk/examples" description="Code examples and patterns" />
+  <Card title="Framework Guides" href="/docs/sdk/frameworks" description="Framework-specific guides" />
+</Cards>
+
+## How It Works
+
+### Automatic Detection
+
+When you make an API call, the SDK:
+
+1. **Intercepts the request** - Wraps `fetch()` and other HTTP clients
+2. **Tracks the auth token** - Reads the `Authorization` header
+3. **Maps to env var** - Matches the token value against `process.env`
+4. **Stores the mapping** - `api.tiktok.com` → `TIKTOK_API_KEY`
+
+### Rate Limit Handling
+
+When a request returns 429:
+
+1. **Looks up the secret** - Finds which env var was used
+2. **Calls the daemon** - POST to `/rotate` endpoint
+3. **Gets next key** - Daemon pulls from key pool
+4. **Retries immediately** - New key is used for retry
+5. **Updates cloud** - Daemon updates hosting provider async
+
+## Related Documentation
+
+- [Key Pools](/docs/usage/key-pools) - Set up multiple keys for rotation
+- [Quick Start](/docs/quick-start) - Get started with Birch CLI
+- [CLI Reference](/docs/cli-reference) - Complete CLI documentation
+

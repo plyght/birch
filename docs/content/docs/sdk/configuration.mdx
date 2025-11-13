@@ -1,0 +1,125 @@
+---
+title: Configuration
+description: Configure the Birch SDK for your environment
+---
+
+The SDK can be configured via environment variables or programmatically. Most users can use the default configuration with just environment variables.
+
+## Environment Variables
+
+Configure the SDK using environment variables:
+
+```bash
+BIRCH_DAEMON_URL=http://localhost:9123   # Default: http://localhost:9123
+BIRCH_ENV=production                      # Default: dev
+BIRCH_DEBUG=true                          # Enable debug logging
+```
+
+### Environment Variable Reference
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `BIRCH_DAEMON_URL` | URL of the Birch daemon | `http://localhost:9123` |
+| `BIRCH_ENV` | Environment name (dev/staging/prod) | `dev` |
+| `BIRCH_DEBUG` | Enable debug logging | `false` |
+
+## Automatic Service Detection
+
+The SDK automatically detects your hosting provider:
+
+- **Vercel**: Detects `VERCEL` env var
+- **Netlify**: Detects `NETLIFY_SITE_ID` env var
+- **Render**: Detects `RENDER_SERVICE_ID` env var
+- **Cloudflare**: Detects `CF_PAGES` env var
+- **Fly.io**: Detects `FLY_APP_NAME` env var
+
+No manual configuration needed for these providers.
+
+## Manual Configuration
+
+For advanced use cases, configure programmatically:
+
+```typescript
+import { configureBirch } from '@birch/client';
+
+await configureBirch({
+  daemonUrl: 'http://localhost:9123',
+  environment: 'production',
+  service: 'vercel',
+  debug: true
+});
+```
+
+### Configuration Options
+
+```typescript
+interface ConfigureOptions {
+  daemonUrl?: string;      // Daemon URL (default: http://localhost:9123)
+  environment?: string;     // Environment name (default: dev)
+  service?: string;         // Service name (auto-detected if not provided)
+  debug?: boolean;          // Enable debug logging (default: false)
+}
+```
+
+## Configuration Examples
+
+### Development
+
+```bash
+# .env.local
+BIRCH_DAEMON_URL=http://localhost:9123
+BIRCH_ENV=dev
+BIRCH_DEBUG=true
+```
+
+### Production (Vercel)
+
+```bash
+# Vercel environment variables
+BIRCH_ENV=production
+# Service auto-detected from VERCEL env var
+```
+
+### Custom Daemon URL
+
+```typescript
+import { configureBirch } from '@birch/client';
+
+await configureBirch({
+  daemonUrl: 'http://192.168.1.100:9123',
+  environment: 'production'
+});
+```
+
+## Debug Mode
+
+Enable verbose logging to troubleshoot issues:
+
+```bash
+BIRCH_DEBUG=true npm run dev
+```
+
+Example output:
+
+```
+[Birch] Auto-rotation initialized { environment: 'dev', service: undefined }
+[Birch] Fetch interceptor installed
+[Birch] Detected env var: TIKTOK_API_KEY for token ***2345
+[Birch] Rate limit hit (429) for TIKTOK_API_KEY, triggering rotation...
+[Birch] Rotation successful, retrying with new key ***6789
+```
+
+## Configuration Order
+
+Configuration is applied in this order:
+
+1. **Programmatic configuration** (via `configureBirch()`)
+2. **Environment variables** (override programmatic config)
+3. **Auto-detection** (for service and environment)
+
+## Next Steps
+
+- [Read the API reference](/docs/sdk/api-reference) for advanced configuration
+- [See examples](/docs/sdk/examples) of different configurations
+- [Check framework guides](/docs/sdk/frameworks) for framework-specific setup
+
