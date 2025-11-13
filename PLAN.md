@@ -1,8 +1,8 @@
-# Keystone: Flexible Credential Model & SaaS Plan
+# Birch: Flexible Credential Model & SaaS Plan
 
 ## Overview
 
-Keystone extends Birch with a SaaS offering providing flexible credential management modes, policy orchestration, team collaboration, and enterprise features—all while maintaining full OSS transparency.
+Birch SaaS extends Birch with a SaaS offering providing flexible credential management modes, policy orchestration, team collaboration, and enterprise features—all while maintaining full OSS transparency.
 
 ## Technology Stack: Supabase
 

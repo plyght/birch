@@ -1,15 +1,27 @@
+pub mod alerts;
 pub mod api;
+pub mod approval;
+pub mod audit;
 pub mod auth;
 pub mod credentials;
+pub mod enterprise;
 pub mod metering;
+pub mod orchestration;
+pub mod policy;
 pub mod supabase;
 pub mod vault;
 pub mod workspace;
 
+pub use alerts::*;
 pub use api::*;
+pub use approval::*;
+pub use audit::*;
 pub use auth::*;
 pub use credentials::*;
+pub use enterprise::*;
 pub use metering::*;
+pub use orchestration::*;
+pub use policy::*;
 pub use supabase::*;
 pub use vault::*;
 pub use workspace::*;
