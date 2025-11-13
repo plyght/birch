@@ -1,37 +1,37 @@
 # Birch Examples
 
-This directory contains example applications demonstrating how to use Birch for automatic API key rotation.
+Example applications demonstrating automatic API key rotation with Birch.
 
 ## Directory Structure
 
 ```
 examples/
-├── rust/          - Rust examples
-└── typescript/    - TypeScript/Node.js examples
+├── rust/          Rust examples
+└── typescript/    TypeScript/Node.js examples
 ```
 
 ## Rust Examples
 
 ### App Signal Hook
 
-Demonstrates how to manually send rotation signals to the Birch daemon from a Rust application.
+Demonstrates manual rotation signal integration from Rust applications.
 
-**Location:** `rust/app_signal_hook.rs`
+**Location**: `rust/app_signal_hook.rs`
 
-**Prerequisites:**
-- Rust toolchain installed
-- Birch daemon running (`birch daemon start`)
+**Prerequisites**:
+- Rust toolchain
+- Birch daemon running
 
-**Run:**
+**Run**:
 ```bash
 cd /path/to/birch
 cargo run --example app_signal_hook
 ```
 
-**What it does:**
-- Simulates detecting a rate limit (HTTP 429)
-- Sends a rotation request to the Birch daemon
-- Displays the daemon's response
+**Functionality**:
+- Simulates rate limit detection (HTTP 429)
+- Sends rotation request to daemon
+- Displays response
 
 ## TypeScript Examples
 
@@ -39,105 +39,105 @@ All TypeScript examples use the `@inaplight/birch-client` SDK for automatic rota
 
 ### CLI Script
 
-A standalone CLI script that makes API calls with automatic rotation.
+Standalone CLI script with automatic rotation.
 
-**Location:** `typescript/cli-script/`
+**Location**: `typescript/cli-script/`
 
-**Prerequisites:**
-- Bun installed (or Node.js with npm)
+**Prerequisites**:
+- Bun or Node.js
 - Birch daemon running
-- API keys in environment variables
+- API keys configured
 
-**Setup:**
+**Setup**:
 ```bash
 cd examples/typescript/cli-script
 bun install @inaplight/birch-client
 ```
 
-**Run:**
+**Run**:
 ```bash
 export TIKTOK_API_KEY="your-key"
 export OPENAI_API_KEY="your-key"
 bun run script.ts
 ```
 
-**What it does:**
-- Imports `@inaplight/birch-client/auto` for zero-config setup
-- Makes fetch requests to TikTok and OpenAI APIs
-- Automatically rotates keys on 429 responses
+**Functionality**:
+- Zero-config setup via `@inaplight/birch-client/auto`
+- Automatic key rotation on 429 responses
+- Works with fetch, axios, and other HTTP clients
 
 ### Express API
 
-A REST API server built with Express that automatically rotates API keys.
+REST API server with automatic key rotation.
 
-**Location:** `typescript/express-api/`
+**Location**: `typescript/express-api/`
 
-**Prerequisites:**
-- Bun installed (or Node.js with npm)
+**Prerequisites**:
+- Bun or Node.js
 - Birch daemon running
 - API keys configured
 
-**Setup:**
+**Setup**:
 ```bash
 cd examples/typescript/express-api
 bun install @inaplight/birch-client express
 bun install -D @types/express
 ```
 
-**Run:**
+**Run**:
 ```bash
 export TWITTER_API_KEY="your-key"
 export TIKTOK_API_KEY="your-key"
 bun run server.ts
 ```
 
-**Test:**
+**Test**:
 ```bash
 curl http://localhost:3000/tweets
 curl http://localhost:3000/tiktok
 ```
 
-**What it does:**
-- Imports `@inaplight/birch-client/auto` at the top of the file
-- Provides REST endpoints that call external APIs
-- Automatically handles rate limits and key rotation
+**Functionality**:
+- Single import enables automatic rotation
+- REST endpoints proxy external APIs
+- Transparent rate limit handling
 
 ### Next.js App
 
-A Next.js App Router application with API routes that use automatic rotation.
+Next.js App Router application with automatic rotation.
 
-**Location:** `typescript/nextjs-app/`
+**Location**: `typescript/nextjs-app/`
 
-**Prerequisites:**
-- Bun installed (or Node.js with npm)
+**Prerequisites**:
+- Bun or Node.js
 - Birch daemon running
 - API keys configured
 
-**Setup:**
+**Setup**:
 ```bash
 cd examples/typescript/nextjs-app
 bun install @inaplight/birch-client next react react-dom
 ```
 
-**Create `.env.local`:**
+**Configure**:
 ```bash
-TIKTOK_API_KEY=your-key
+echo "TIKTOK_API_KEY=your-key" > .env.local
 ```
 
-**Run:**
+**Run**:
 ```bash
 bun run next dev
 ```
 
-**Test:**
+**Test**:
 ```bash
 curl http://localhost:3000/api/tiktok
 ```
 
-**What it does:**
-- Imports `@inaplight/birch-client/auto` in the root layout
-- Provides API routes that fetch from external APIs
-- Automatically rotates keys when rate limits are hit
+**Functionality**:
+- Root layout imports `@inaplight/birch-client/auto`
+- API routes fetch from external APIs
+- Automatic rotation on rate limits
 
 ## Common Setup
 
@@ -178,22 +178,22 @@ export OPENAI_API_KEY="your-first-key"
 
 ## How It Works
 
-### Rust Examples (Manual)
+### Rust Examples
 
-The Rust example demonstrates the manual approach:
-1. Application detects a condition requiring rotation (e.g., 429 response)
-2. Application sends HTTP POST to `http://localhost:9123/rotate`
-3. Daemon queues the rotation and returns immediately
-4. Daemon updates the key asynchronously
+Manual integration approach:
+1. Application detects rotation trigger (e.g., 429 response)
+2. Sends HTTP POST to `http://localhost:9123/rotate`
+3. Daemon queues rotation and returns immediately
+4. Key updates occur asynchronously
 
-### TypeScript Examples (Automatic)
+### TypeScript Examples
 
-The TypeScript examples use the SDK for zero-config automation:
-1. Import `@inaplight/birch-client/auto` at the entry point
-2. SDK intercepts all HTTP requests (fetch, axios, etc.)
-3. SDK detects 429 responses automatically
-4. SDK calls the daemon and retries with a new key immediately
-5. Daemon updates production secrets asynchronously
+Automatic integration via SDK:
+1. Import `@inaplight/birch-client/auto` at entry point
+2. SDK intercepts HTTP requests (fetch, axios, etc.)
+3. Automatic 429 detection
+4. Immediate rotation and retry
+5. Asynchronous production secret updates
 
 ## Troubleshooting
 

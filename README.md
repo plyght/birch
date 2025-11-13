@@ -2,13 +2,13 @@
 
 Peel. Rotate. Renew.
 
-Birch is a minimal, open-source key rotation engine for modern API-driven applications. Rotate secrets, manage key pools for rate-limited APIs, sign audit logs, and update environments—all from a single Rust binary. No Vault required. No cloud lock-in. Works standalone or integrates with your existing infrastructure.
+A minimal, open-source key rotation engine for modern API-driven applications. Rotate secrets, manage key pools for rate-limited APIs, sign audit logs, and update environments from a single Rust binary. No Vault required. No cloud lock-in. Works standalone or integrates with existing infrastructure.
 
 ## Why Birch
 
-Most teams handle secret rotation with ad-hoc scripts, manual processes, or heavyweight tools like Vault. Birch solves the 90% use case: rotating API keys for rate-limited services, updating `.env` files and production secrets, and maintaining audit trails—without the operational overhead.
+Most teams handle secret rotation with ad-hoc scripts, manual processes, or heavyweight tools like Vault. Birch solves the 90% use case: rotating API keys for rate-limited services, updating `.env` files and production secrets, and maintaining audit trails without the operational overhead.
 
-**Key Pools** are Birch's differentiating feature. When your application hits a rate limit (HTTP 429), Birch automatically rotates to the next key in your pre-configured pool, marks the exhausted key for rotation, and continues serving traffic. This solves the common problem of managing multiple Stripe keys, OpenAI keys, or SendGrid keys without manual intervention.
+**Key Pools** are Birch's differentiating feature. When your application hits a rate limit (HTTP 429), Birch automatically rotates to the next key in your pre-configured pool, marks the exhausted key for rotation, and continues serving traffic. This solves the common problem of managing multiple API keys (Stripe, OpenAI, SendGrid) without manual intervention.
 
 ## Comparison
 
@@ -23,14 +23,16 @@ Most teams handle secret rotation with ad-hoc scripts, manual processes, or heav
 
 ## Birch SaaS Extension
 
-**Birch SaaS** extends Birch with a SaaS offering for teams needing policy orchestration, collaboration, and enterprise features—while keeping everything open source.
+Birch SaaS extends the open-source CLI with policy orchestration, team collaboration, and enterprise features while keeping everything open source.
 
-**Three modes:**
-- **Self-Hosted (OSS)** - Free, unlimited, CLI-only (the Birch you know)
+### Operating Modes
+
+- **Self-Hosted (OSS)** - Free, unlimited, CLI-only
 - **SaaS - Hosted Credentials** - Zero management, encrypted vault
 - **SaaS - Customer-Managed** - OAuth/KMS/API integration, credentials stay in your infrastructure
 
-**Features:**
+### Features
+
 - Flexible credential modes per provider
 - Team collaboration with RBAC (Owner/Admin/Operator/Viewer/Auditor)
 - Policy engine with approval workflows
@@ -38,14 +40,15 @@ Most teams handle secret rotation with ad-hoc scripts, manual processes, or heav
 - Enhanced audit logs and compliance reporting
 - Enterprise: SSO/SCIM, customer-managed keys, SLA
 
-**Quick start:**
+### Quick Start
+
 ```bash
 birch login
 birch workspace create "My Team"
 birch provider set vercel --mode hosted
 ```
 
-See [docs/saas](./apps/docs/content/docs/saas/) for full documentation.
+See [SaaS documentation](./apps/docs/content/docs/saas/) for details.
 
 ## Installation
 
@@ -70,7 +73,7 @@ sudo cp target/release/birch /usr/local/bin/
 
 ## Quick Start
 
-### Initialize Configuration
+Initialize your configuration:
 
 ```bash
 birch config init
@@ -78,14 +81,14 @@ birch config init
 
 This creates `~/.birch/config.toml` with default settings.
 
-## Hero Examples
+## Usage Examples
 
-### Example 1: Simple Rotation
+### Simple Rotation
 
-Rotate your OpenAI key every week and update your `.env` file:
+Rotate API keys and update environments:
 
 ```bash
-# Dev environment
+# Development environment
 birch rotate OPENAI_API_KEY --env dev
 
 # Production (Vercel)
@@ -100,27 +103,26 @@ Schedule with cron:
 0 2 * * 0 birch rotate OPENAI_API_KEY --env prod --service vercel
 ```
 
-### Example 2: Rate-Limit Pool Cycling
+### Rate-Limit Pool Cycling
 
-Use a pool of 5 API keys. On HTTP 429, automatically advance to the next key and rotate the exhausted key:
+Automatically cycle through multiple API keys when hitting rate limits:
 
-**Step 1: Create the pool**
+**1. Create the pool**
 
 ```bash
 birch pool init TIKTOK_API_KEY \
   --keys "sk_key1,sk_key2,sk_key3,sk_key4,sk_key5"
 ```
 
-**Step 2: Start the daemon**
+**2. Start the daemon**
 
 ```bash
 birch daemon start
 ```
 
-**Step 3: Integrate with your application**
+**3. Integrate with your application**
 
 ```javascript
-// Your app detects 429
 if (response.status === 429) {
   await fetch('http://localhost:9123/rotate', {
     method: 'POST',
@@ -131,11 +133,10 @@ if (response.status === 429) {
       service: 'vercel'
     })
   });
-  // Retry request with new key
 }
 ```
 
-**Step 4: Use the SDK for zero-config integration**
+**4. Or use the SDK for automatic integration**
 
 ```bash
 npm install @inaplight/birch-client
@@ -144,7 +145,6 @@ npm install @inaplight/birch-client
 ```typescript
 import '@inaplight/birch-client/auto';
 
-// SDK automatically detects 429s, rotates keys, and retries
 const response = await fetch('https://api.tiktok.com/v1/videos', {
   headers: {
     Authorization: `Bearer ${process.env.TIKTOK_API_KEY}`
@@ -152,21 +152,23 @@ const response = await fetch('https://api.tiktok.com/v1/videos', {
 });
 ```
 
-### Example 3: Host Integration with Rollback
+The SDK automatically detects 429 responses, rotates keys, and retries requests.
 
-Rotate production key on Fly.io, update secret store, trigger redeploy, with automatic rollback support:
+### Host Integration with Rollback
+
+Rotate production keys with automatic rollback support:
 
 ```bash
 export FLY_API_TOKEN="your-token"
 export FLY_APP_NAME="your-app"
 
-# Dry-run first
+# Preview changes
 birch rotate STRIPE_SECRET_KEY --env prod --service fly --dry-run
 
 # Execute rotation
 birch rotate STRIPE_SECRET_KEY --env prod --service fly --redeploy
 
-# If something breaks, rollback within the window (default: 1 hour)
+# Rollback within the configured window (default: 1 hour)
 birch rollback STRIPE_SECRET_KEY --env prod --service fly --redeploy
 ```
 
@@ -265,16 +267,17 @@ Note: Cloud secret managers update secrets directly but do not automatically tri
 
 ## Documentation
 
-Complete documentation is available in the `docs` directory, powered by Fumadocs.
+Complete documentation is available in the `apps/docs` directory.
 
-Quick links:
+### Quick Links
+
 - [Quick Start Guide](./apps/docs/content/docs/quick-start.mdx)
 - [Key Pools](./apps/docs/content/docs/usage/key-pools.mdx)
 - [Operator Runbook](./apps/docs/content/docs/operators/runbook.mdx)
 - [Invariants and Guarantees](./apps/docs/content/docs/operators/invariants.mdx)
 - [CLI Reference](./apps/docs/content/docs/cli-reference.mdx)
 
-To run the documentation locally:
+### Running Documentation Locally
 
 ```bash
 cd apps/docs
@@ -282,17 +285,19 @@ bun install
 bun run dev
 ```
 
-Then open http://localhost:3000
+Visit http://localhost:3000
 
 ## Architecture
 
-Birch is a single Rust binary with:
-- CLI for manual operations
-- Optional background daemon for app-signal handling
-- File-based locking and audit logging
-- Connector architecture for provider integrations
+Birch is a single Rust binary with the following components:
 
-No traffic proxying. No central secret storage. Just direct updates to your `.env` files and provider APIs.
+- **CLI** - Manual operations and scheduled rotations
+- **Daemon** - Optional background service for application-triggered rotations
+- **File-based locking** - Prevents concurrent rotation operations
+- **Audit logging** - Cryptographically signed event logs
+- **Connector architecture** - Extensible provider integrations
+
+No traffic proxying. No centralized secret storage. Direct updates to `.env` files and provider APIs.
 
 ## License
 

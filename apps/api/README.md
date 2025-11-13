@@ -7,8 +7,8 @@ Backend API service for Birch SaaS, built with Rust and Axum.
 - **Framework**: Axum (async Rust web framework)
 - **Database**: PostgreSQL via Supabase
 - **Cache**: Redis
-- **Auth**: JWT validation + API keys
-- **Encryption**: ChaCha20Poly1305 envelope encryption
+- **Authentication**: JWT validation and API keys
+- **Encryption**: ChaCha20Poly1305 envelope encryption with workspace-specific keys
 
 ## Getting Started
 
@@ -20,30 +20,13 @@ Backend API service for Birch SaaS, built with Rust and Axum.
 
 ### Environment Variables
 
-Copy `../../env.example` to `.env` and configure:
+Copy `../../env.example` to `.env` and configure. Generate the master key with:
 
 ```bash
-# Supabase
-SUPABASE_URL=https://your-project.supabase.co
-SUPABASE_ANON_KEY=your-anon-key
-SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
-
-# Database
-DATABASE_URL=postgresql://postgres:password@localhost:54322/postgres
-
-# Redis
-REDIS_URL=redis://localhost:6379
-
-# API
-API_HOST=0.0.0.0
-API_PORT=3000
-
-# Encryption
-VAULT_MASTER_KEY=your-64-char-hex-key
-
-# Logging
-RUST_LOG=info
+openssl rand -hex 32
 ```
+
+See `../../env.example` for full configuration details.
 
 ### Run Migrations
 
@@ -68,53 +51,55 @@ The API will be available at `http://localhost:3000`.
 GET /health
 ```
 
+Returns API health status.
+
 ### Workspaces
 
 ```
-POST   /api/v1/workspaces
-GET    /api/v1/workspaces
-GET    /api/v1/workspaces/:id
-PUT    /api/v1/workspaces/:id
-DELETE /api/v1/workspaces/:id
+POST   /api/v1/workspaces          Create workspace
+GET    /api/v1/workspaces          List workspaces
+GET    /api/v1/workspaces/:id      Get workspace
+PUT    /api/v1/workspaces/:id      Update workspace
+DELETE /api/v1/workspaces/:id      Delete workspace
 ```
 
 ### Members
 
 ```
-POST   /api/v1/workspaces/:id/members
-GET    /api/v1/workspaces/:id/members
-PUT    /api/v1/workspaces/:id/members/:user_id
-DELETE /api/v1/workspaces/:id/members/:user_id
+POST   /api/v1/workspaces/:id/members              Invite member
+GET    /api/v1/workspaces/:id/members              List members
+PUT    /api/v1/workspaces/:id/members/:user_id     Update role
+DELETE /api/v1/workspaces/:id/members/:user_id     Remove member
 ```
 
 ### Providers
 
 ```
-POST   /api/v1/workspaces/:id/providers
-GET    /api/v1/workspaces/:id/providers
-GET    /api/v1/workspaces/:id/providers/:provider
-PUT    /api/v1/workspaces/:id/providers/:provider
-DELETE /api/v1/workspaces/:id/providers/:provider
+POST   /api/v1/workspaces/:id/providers/:provider     Configure provider
+GET    /api/v1/workspaces/:id/providers               List providers
+GET    /api/v1/workspaces/:id/providers/:provider     Get provider config
+PUT    /api/v1/workspaces/:id/providers/:provider     Update provider
+DELETE /api/v1/workspaces/:id/providers/:provider     Delete provider
 ```
 
 ### Credentials
 
 ```
-POST /api/v1/workspaces/:id/credentials
-GET  /api/v1/workspaces/:id/credentials/:provider/:secret_name
+POST /api/v1/workspaces/:id/credentials                         Store credential
+GET  /api/v1/workspaces/:id/credentials/:provider/:secret_name  Retrieve credential
 ```
 
 ### API Keys
 
 ```
-POST   /api/v1/workspaces/:id/api-keys
-GET    /api/v1/workspaces/:id/api-keys
-DELETE /api/v1/workspaces/:id/api-keys/:key_id
+POST   /api/v1/workspaces/:id/api-keys          Create API key
+GET    /api/v1/workspaces/:id/api-keys          List API keys
+DELETE /api/v1/workspaces/:id/api-keys/:key_id  Revoke API key
 ```
 
 ## Authentication
 
-All requests require authentication via Bearer token:
+All API requests require authentication via Bearer token:
 
 ```bash
 curl -H "Authorization: Bearer <your-api-key>" \
@@ -155,21 +140,22 @@ src/
 
 ### Encryption
 
-- **Algorithm**: ChaCha20Poly1305 (AEAD)
+- **Algorithm**: ChaCha20Poly1305 (AEAD cipher)
 - **Key Derivation**: Workspace-specific keys derived from master key
 - **Nonce**: Random 12-byte nonce per encryption operation
+- **Storage**: Encrypted credentials stored in PostgreSQL with RLS
 
 ### Database Security
 
-- **RLS**: Row Level Security enforces workspace isolation
-- **Prepared Statements**: All queries use prepared statements
-- **Connection Pooling**: Deadpool for safe connection management
+- **Row Level Security**: Enforces workspace isolation at database level
+- **Prepared Statements**: All queries use parameterized statements
+- **Connection Pooling**: Secure connection management via Deadpool
 
 ### Authentication
 
-- **JWT**: Supabase Auth tokens for user sessions
-- **API Keys**: Argon2 hashed keys for programmatic access
-- **RBAC**: Role-based access control with 5 roles
+- **User Sessions**: JWT validation via Supabase Auth
+- **API Keys**: Argon2id hashed keys for programmatic access
+- **RBAC**: Five-tier role system (Owner/Admin/Operator/Viewer/Auditor)
 
 ## Deployment
 

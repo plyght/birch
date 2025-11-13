@@ -4,14 +4,14 @@ Zero-configuration automatic API key rotation for Node.js applications. Automati
 
 ## Features
 
-- **Zero Configuration**: Single import enables automatic rotation
-- **Zero Intrusion**: Works with existing fetch, axios, and other HTTP clients
-- **Automatic Detection**: Detects which API keys are being used
-- **429 Handling**: Automatically rotates on rate limit responses
-- **Immediate Retry**: Retries failed requests with new keys
-- **Pool Support**: Manages multiple keys for each API
-- **Works Everywhere**: Development, staging, and production environments
-- **Debug Mode**: Optional verbose logging
+- **Zero Configuration** - Single import enables automatic rotation
+- **Zero Intrusion** - Works with existing fetch, axios, and other HTTP clients
+- **Automatic Detection** - Identifies which API keys are being used
+- **429 Handling** - Automatically rotates on rate limit responses
+- **Immediate Retry** - Retries failed requests with new keys
+- **Pool Support** - Manages multiple keys for each API
+- **Cross-Environment** - Development, staging, and production support
+- **Debug Mode** - Optional verbose logging
 
 ## Installation
 
@@ -21,21 +21,20 @@ npm install @inaplight/birch-client
 
 ## Quick Start
 
-### 1. Set Up Birch CLI
+### 1. Set Up Birch
 
 ```bash
 birch daemon start
-
 birch pool init TIKTOK_API_KEY --keys "key1,key2,key3"
 ```
 
-### 2. Add One Import
+### 2. Add Import
 
 ```typescript
 import '@inaplight/birch-client/auto';
 ```
 
-### 3. Use Your APIs Normally
+### 3. Use Your APIs
 
 ```typescript
 const response = await fetch('https://api.tiktok.com/v1/videos', {
@@ -45,11 +44,11 @@ const response = await fetch('https://api.tiktok.com/v1/videos', {
 });
 ```
 
-When you hit a 429 response, Birch automatically:
+When a 429 response occurs, Birch automatically:
 1. Detects the API key being used
-2. Calls the Birch daemon to rotate
-3. Gets the next key from the pool
-4. Retries your request immediately
+2. Calls the daemon to rotate keys
+3. Retrieves the next key from the pool
+4. Retries the request immediately
 
 ## Usage Examples
 
@@ -170,31 +169,31 @@ await configureBirch({
 
 ### Automatic Environment Detection
 
-The SDK automatically detects your environment:
+The SDK automatically detects:
 
-- **Service**: Vercel, Netlify, Render, Cloudflare, Fly.io
-- **Environment**: `BIRCH_ENV` or `NODE_ENV` or `dev`
-- **Daemon URL**: `BIRCH_DAEMON_URL` or `http://localhost:9123`
+- **Service** - Vercel, Netlify, Render, Cloudflare, Fly.io
+- **Environment** - `BIRCH_ENV` or `NODE_ENV` or `dev` (default)
+- **Daemon URL** - `BIRCH_DAEMON_URL` or `http://localhost:9123` (default)
 
 ### Environment Variable Tracking
 
-When you make an API call, Birch:
+On each API call, Birch:
 
 1. Intercepts the request
 2. Reads the `Authorization` header
 3. Matches the token against `process.env`
-4. Stores the mapping: `api.tiktok.com` → `TIKTOK_API_KEY`
+4. Stores the mapping (e.g., `api.tiktok.com` → `TIKTOK_API_KEY`)
 
 ### Rate Limit Handling
 
 When a request returns 429:
 
-1. Looks up which env var was used
+1. Looks up which environment variable was used
 2. Calls `/rotate` on the Birch daemon
-3. Daemon pulls next key from pool
+3. Daemon retrieves next key from pool
 4. Returns new key immediately
-5. SDK retries with new key
-6. Daemon updates cloud secrets async
+5. SDK retries request with new key
+6. Daemon updates cloud secrets asynchronously
 
 ## Manual Mode
 
@@ -313,7 +312,7 @@ vercel deploy
 
 ### "Daemon not available"
 
-Ensure the Birch daemon is running:
+Verify the daemon is running:
 
 ```bash
 birch daemon start
@@ -322,25 +321,28 @@ curl http://localhost:9123/health
 
 ### "Could not detect secret name"
 
-Enable debug mode to see detection:
+Enable debug mode:
 
 ```bash
 BIRCH_DEBUG=true node script.js
 ```
 
-If the SDK does not recognize your token format:
-1. Ensure your environment variable name includes API_KEY, TOKEN, or SECRET
-2. Match the token value exactly in your environment
+The SDK recognizes environment variables ending with:
+- `API_KEY`
+- `TOKEN`
+- `SECRET`
+
+Ensure your environment variable name follows this pattern.
 
 ### Keys Not Rotating
 
-Check your pool status:
+Check pool status:
 
 ```bash
 birch pool status TIKTOK_API_KEY
 ```
 
-Ensure you have multiple keys in the pool.
+Verify multiple keys exist in the pool.
 
 ## Security
 

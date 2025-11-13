@@ -5,7 +5,7 @@ description: Peel. Rotate. Renew.
 
 import { Card, Cards } from 'fumadocs-ui/components/card';
 
-Birch is an open-source CLI tool for safe, fast secret rotation. It updates local `.env` files and production host secrets by name, without proxying traffic. Your applications call provider APIs directly with their own keys.
+Birch is an open-source CLI tool for safe, fast secret rotation. Updates local `.env` files and production host secrets without proxying traffic. Applications call provider APIs directly with their own keys.
 
 ## Features
 
@@ -30,13 +30,13 @@ Birch is an open-source CLI tool for safe, fast secret rotation. It updates loca
 
 ## Architecture
 
-Birch is a single Rust binary with:
+Birch is a single Rust binary with the following components:
 - CLI for manual operations
-- Optional background daemon for app-signal handling
+- Optional background daemon for application-triggered rotations
 - File-based locking and audit logging
 - Connector architecture for provider integrations
 
-**No traffic proxying. No central secret storage.** Just direct updates to your `.env` files and provider APIs.
+No traffic proxying. No centralized secret storage. Direct updates to `.env` files and provider APIs.
 
 ## Next Steps
 
