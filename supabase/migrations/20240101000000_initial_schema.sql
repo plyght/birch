@@ -156,10 +156,10 @@ CREATE POLICY "Owners and admins can add members"
     ON workspace_members FOR INSERT
     WITH CHECK (
         EXISTS (
-            SELECT 1 FROM workspace_members
-            WHERE workspace_members.workspace_id = workspace_members.workspace_id
-            AND workspace_members.user_id = auth.uid()
-            AND workspace_members.role IN ('owner', 'admin')
+            SELECT 1 FROM workspace_members wm
+            WHERE wm.workspace_id = workspace_members.workspace_id
+            AND wm.user_id = auth.uid()
+            AND wm.role IN ('owner', 'admin')
         )
     );
 

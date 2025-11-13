@@ -53,6 +53,42 @@ impl MeteringService {
         Ok(count as u32)
     }
 
+    pub async fn check_and_increment_rotation(
+        &self,
+        workspace_id: Uuid,
+        plan_tier: &PlanTier,
+    ) -> Result<bool> {
+        if let Some(limit) = plan_tier.rotation_limit() {
+            let db_client = self.client.get_client().await?;
+            let today = chrono::Utc::now().date_naive();
+
+            let stmt = db_client
+                .prepare(
+                    "INSERT INTO rotation_metering (workspace_id, date, rotation_count)
+                     VALUES ($1, $2, 1)
+                     ON CONFLICT (workspace_id, date)
+                     DO UPDATE SET rotation_count = rotation_metering.rotation_count + 1
+                     WHERE rotation_metering.rotation_count < $3
+                     RETURNING rotation_count",
+                )
+                .await?;
+
+            let rows = db_client
+                .query(&stmt, &[&workspace_id, &today, &(limit as i32)])
+                .await?;
+
+            if rows.is_empty() {
+                return Ok(false);
+            }
+
+            let count: i32 = rows[0].get(0);
+            Ok(count <= limit)
+        } else {
+            self.increment_rotation_count(workspace_id).await?;
+            Ok(true)
+        }
+    }
+
     pub async fn check_rotation_limit(
         &self,
         workspace_id: Uuid,

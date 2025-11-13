@@ -44,10 +44,15 @@ pub async fn create_workspace(
         .await
         .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
 
+    let plan_tier = row
+        .get::<_, String>(2)
+        .parse()
+        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+
     let workspace = Workspace {
         id: row.get(0),
         name: row.get(1),
-        plan_tier: row.get::<_, String>(2).parse().unwrap(),
+        plan_tier,
         created_at: row.get(3),
         updated_at: row.get(4),
     };
@@ -108,10 +113,15 @@ pub async fn get_workspace(
         .await
         .map_err(|_| StatusCode::NOT_FOUND)?;
 
+    let plan_tier = row
+        .get::<_, String>(2)
+        .parse()
+        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+
     let workspace = Workspace {
         id: row.get(0),
         name: row.get(1),
-        plan_tier: row.get::<_, String>(2).parse().unwrap(),
+        plan_tier,
         created_at: row.get(3),
         updated_at: row.get(4),
     };

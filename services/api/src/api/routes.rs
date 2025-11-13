@@ -22,22 +22,15 @@ pub struct AppState {
     pub metering: Arc<MeteringService>,
 }
 
-pub fn create_router(client: SupabaseClient, redis_url: String) -> Router {
-    let encryption = VaultEncryption::new().expect("Failed to initialize encryption");
+pub async fn create_router(client: SupabaseClient, redis_url: String) -> anyhow::Result<Router> {
+    let encryption = VaultEncryption::new()?;
     let vault = Arc::new(VaultStorage::new(client.clone(), encryption));
 
-    let cache = tokio::task::block_in_place(|| {
-        tokio::runtime::Handle::current()
-            .block_on(async { CredentialCache::new(&redis_url, 600).await })
-    })
-    .expect("Failed to initialize cache");
+    let cache = CredentialCache::new(&redis_url, 600).await?;
 
     let resolver = Arc::new(tokio::sync::Mutex::new(CredentialResolver::new(
         client.clone(),
-        VaultStorage::new(
-            client.clone(),
-            VaultEncryption::new().expect("Failed to initialize encryption"),
-        ),
+        VaultStorage::new(client.clone(), VaultEncryption::new()?),
         cache,
     )));
 
@@ -50,9 +43,9 @@ pub fn create_router(client: SupabaseClient, redis_url: String) -> Router {
         metering,
     };
 
-    Router::new()
+    Ok(Router::new()
         .route("/health", get(health_check))
-        .nest("/api/v1", api_routes(state))
+        .nest("/api/v1", api_routes(state)))
 }
 
 async fn health_check() -> &'static str {

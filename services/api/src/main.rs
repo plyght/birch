@@ -21,6 +21,7 @@ async fn main() -> Result<()> {
     let supabase_client = SupabaseClient::new(&database_url).await?;
 
     let app = create_router(supabase_client, redis_url)
+        .await?
         .layer(CorsLayer::permissive())
         .layer(TraceLayer::new_for_http());
 

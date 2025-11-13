@@ -3,7 +3,9 @@ use chacha20poly1305::{
     aead::{Aead, KeyInit, OsRng},
     ChaCha20Poly1305, Nonce,
 };
+use hkdf::Hkdf;
 use rand::RngCore;
+use sha2::Sha256;
 use std::env;
 use uuid::Uuid;
 
@@ -31,12 +33,9 @@ impl VaultEncryption {
 
     fn derive_workspace_key(&self, workspace_id: &Uuid) -> [u8; 32] {
         let mut key = [0u8; 32];
-        let workspace_bytes = workspace_id.as_bytes();
-
-        for i in 0..32 {
-            key[i] = self.master_key[i] ^ workspace_bytes[i % 16];
-        }
-
+        let hk = Hkdf::<Sha256>::new(Some(workspace_id.as_bytes()), &self.master_key);
+        hk.expand(b"vault-workspace-key", &mut key)
+            .expect("HKDF expand to fixed key size");
         key
     }
 

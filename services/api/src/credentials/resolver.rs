@@ -122,4 +122,15 @@ impl CredentialResolver {
             }
         }
     }
+
+    pub async fn invalidate_cache(
+        &mut self,
+        workspace_id: Uuid,
+        provider: &str,
+        secret_name: &str,
+    ) -> Result<()> {
+        self.cache
+            .invalidate(&workspace_id, provider, secret_name)
+            .await
+    }
 }

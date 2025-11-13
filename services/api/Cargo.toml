@@ -38,6 +38,10 @@ argon2 = "0.5"
 rand = "0.8"
 hex = "0.4"
 base64 = "0.22"
+hkdf = "0.12"
+sha2 = "0.10"
+native-tls = "0.2"
+postgres-native-tls = "0.5"
 
 async-trait = "0.1"
 

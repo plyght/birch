@@ -6,6 +6,7 @@ pub enum CredentialMode {
     Hosted,
     OAuth,
     Kms,
+    #[serde(rename = "api_key")]
     ApiKey,
 }
 

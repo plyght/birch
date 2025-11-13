@@ -162,24 +162,29 @@ pub async fn update_provider_config(
         .await
         .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
 
+    let lookup_stmt = db_client
+        .prepare(
+            "SELECT mode, config_jsonb FROM provider_configs WHERE workspace_id = $1 AND provider = $2",
+        )
+        .await
+        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+
+    let existing = db_client
+        .query_one(&lookup_stmt, &[&workspace_id, &provider])
+        .await
+        .map_err(|_| StatusCode::NOT_FOUND)?;
+
+    let existing_mode: String = existing.get(0);
+    let existing_config: JsonValue = existing.get(1);
+
     let mode_str = if let Some(mode) = req.mode {
-        let _: CredentialMode = mode.parse().map_err(|_| StatusCode::BAD_REQUEST)?;
-        mode
+        let parsed: CredentialMode = mode.parse().map_err(|_| StatusCode::BAD_REQUEST)?;
+        parsed.as_str().to_owned()
     } else {
-        let stmt = db_client
-            .prepare("SELECT mode FROM provider_configs WHERE workspace_id = $1 AND provider = $2")
-            .await
-            .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
-
-        let row = db_client
-            .query_one(&stmt, &[&workspace_id, &provider])
-            .await
-            .map_err(|_| StatusCode::NOT_FOUND)?;
-
-        row.get(0)
+        existing_mode
     };
 
-    let config = req.config.unwrap_or(serde_json::json!({}));
+    let config = req.config.unwrap_or(existing_config);
 
     let stmt = db_client
         .prepare(

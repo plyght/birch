@@ -23,6 +23,7 @@ impl JwtValidator {
     pub fn validate_token(&self, token: &str) -> Result<Uuid> {
         let mut validation = Validation::default();
         validation.validate_exp = true;
+        validation.algorithms = vec![jsonwebtoken::Algorithm::HS256];
 
         let token_data = decode::<Claims>(
             token,

@@ -34,6 +34,15 @@ pub async fn store_credential(
             StatusCode::INTERNAL_SERVER_ERROR
         })?;
 
+    let mut resolver = state.resolver.lock().await;
+    resolver
+        .invalidate_cache(workspace_id, &req.provider, &req.secret_name)
+        .await
+        .map_err(|e| {
+            tracing::warn!("Failed to invalidate cache: {}", e);
+            StatusCode::INTERNAL_SERVER_ERROR
+        })?;
+
     Ok(Json(CredentialResponse { success: true }))
 }
 

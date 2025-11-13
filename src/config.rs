@@ -228,6 +228,22 @@ impl Config {
         if let Ok(val) = std::env::var("AZURE_TENANT_ID") {
             self.connector_auth.azure_tenant_id = Some(val);
         }
+
+        if let Ok(val) = std::env::var("BIRCH_MODE") {
+            self.mode = val;
+        }
+
+        if let Ok(val) = std::env::var("BIRCH_SAAS_API_URL") {
+            self.saas_api_url = Some(val);
+        }
+
+        if let Ok(val) = std::env::var("BIRCH_SAAS_API_KEY") {
+            self.saas_api_key = Some(val);
+        }
+
+        if let Ok(val) = std::env::var("BIRCH_SAAS_WORKSPACE_ID") {
+            self.saas_workspace_id = Some(val);
+        }
     }
 }
 

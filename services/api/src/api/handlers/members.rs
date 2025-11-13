@@ -49,11 +49,16 @@ pub async fn add_workspace_member(
         .await
         .map_err(|_| StatusCode::CONFLICT)?;
 
+    let row_role: Role = row
+        .get::<_, String>(3)
+        .parse()
+        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+
     let member = WorkspaceMember {
         id: row.get(0),
         workspace_id: row.get(1),
         user_id: row.get(2),
-        role: row.get::<_, String>(3).parse().unwrap(),
+        role: row_role,
         created_at: row.get(4),
     };
 
@@ -83,16 +88,20 @@ pub async fn list_workspace_members(
         .await
         .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
 
-    let members: Vec<WorkspaceMember> = rows
-        .iter()
-        .map(|row| WorkspaceMember {
+    let mut members = Vec::with_capacity(rows.len());
+    for row in &rows {
+        let row_role: Role = row
+            .get::<_, String>(3)
+            .parse()
+            .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+        members.push(WorkspaceMember {
             id: row.get(0),
             workspace_id: row.get(1),
             user_id: row.get(2),
-            role: row.get::<_, String>(3).parse().unwrap(),
+            role: row_role,
             created_at: row.get(4),
-        })
-        .collect();
+        });
+    }
 
     Ok(Json(members))
 }
@@ -129,11 +138,16 @@ pub async fn update_member_role(
         .await
         .map_err(|_| StatusCode::NOT_FOUND)?;
 
+    let row_role: Role = row
+        .get::<_, String>(3)
+        .parse()
+        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+
     let member = WorkspaceMember {
         id: row.get(0),
         workspace_id: row.get(1),
         user_id: row.get(2),
-        role: row.get::<_, String>(3).parse().unwrap(),
+        role: row_role,
         created_at: row.get(4),
     };
 
