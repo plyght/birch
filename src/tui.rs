@@ -86,24 +86,34 @@ impl DashboardState {
 }
 
 pub async fn run_dashboard() -> Result<()> {
-    enable_raw_mode()?;
-    let mut stdout = io::stdout();
-    execute!(stdout, EnterAlternateScreen, EnableMouseCapture)?;
-    let backend = CrosstermBackend::new(stdout);
-    let mut terminal = Terminal::new(backend)?;
+    let mut terminal_opt = None::<Terminal<CrosstermBackend<io::Stdout>>>;
 
-    let mut state = DashboardState::new();
-    state.refresh()?;
+    let result = (|| -> Result<()> {
+        enable_raw_mode()?;
+        let mut stdout = io::stdout();
+        execute!(stdout, EnterAlternateScreen, EnableMouseCapture)?;
+        let backend = CrosstermBackend::new(stdout);
+        let terminal = Terminal::new(backend)?;
+        terminal_opt = Some(terminal);
 
-    let result = run_app(&mut terminal, &mut state);
+        let mut state = DashboardState::new();
+        state.refresh()?;
 
-    disable_raw_mode()?;
-    execute!(
-        terminal.backend_mut(),
-        LeaveAlternateScreen,
-        DisableMouseCapture
-    )?;
-    terminal.show_cursor()?;
+        run_app(terminal_opt.as_mut().unwrap(), &mut state)
+    })();
+
+    let _ = disable_raw_mode();
+    if let Some(ref mut terminal) = terminal_opt {
+        let _ = execute!(
+            terminal.backend_mut(),
+            LeaveAlternateScreen,
+            DisableMouseCapture
+        );
+        let _ = terminal.show_cursor();
+    } else {
+        let mut stdout = io::stdout();
+        let _ = execute!(stdout, LeaveAlternateScreen, DisableMouseCapture);
+    }
 
     result
 }
