@@ -1,4 +1,4 @@
-# @birch/client
+# @inaplight/birch-client
 
 Zero-configuration automatic API key rotation for Node.js applications. Automatically detects rate limits and rotates to the next key in your pool with no code changes required.
 
@@ -16,7 +16,7 @@ Zero-configuration automatic API key rotation for Node.js applications. Automati
 ## Installation
 
 ```bash
-npm install @birch/client
+npm install @inaplight/birch-client
 ```
 
 ## Quick Start
@@ -32,7 +32,7 @@ birch pool init TIKTOK_API_KEY --keys "key1,key2,key3"
 ### 2. Add One Import
 
 ```typescript
-import '@birch/client/auto';
+import '@inaplight/birch-client/auto';
 ```
 
 ### 3. Use Your APIs Normally
@@ -56,7 +56,7 @@ When you hit a 429 response, Birch automatically:
 ### Next.js App Router
 
 ```typescript
-import '@birch/client/auto';
+import '@inaplight/birch-client/auto';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
@@ -84,7 +84,7 @@ export async function GET() {
 ### Express API
 
 ```typescript
-import '@birch/client/auto';
+import '@inaplight/birch-client/auto';
 import express from 'express';
 
 const app = express();
@@ -106,7 +106,7 @@ app.listen(3000);
 ### CLI Script
 
 ```typescript
-import '@birch/client/auto';
+import '@inaplight/birch-client/auto';
 
 async function main() {
   const response = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -131,7 +131,7 @@ main();
 ### With Axios
 
 ```typescript
-import '@birch/client/auto';
+import '@inaplight/birch-client/auto';
 import axios from 'axios';
 
 const response = await axios.get('https://api.tiktok.com/v1/videos', {
@@ -156,7 +156,7 @@ BIRCH_DEBUG=true
 ### Manual Configuration
 
 ```typescript
-import { configureBirch } from '@birch/client';
+import { configureBirch } from '@inaplight/birch-client';
 
 await configureBirch({
   daemonUrl: 'http://localhost:9123',
@@ -205,7 +205,7 @@ import {
   installFetchInterceptor,
   daemonClient,
   envTracker
-} from '@birch/client';
+} from '@inaplight/birch-client';
 
 await configureBirch({
   daemonUrl: 'http://localhost:9123',

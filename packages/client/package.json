@@ -1,5 +1,5 @@
 {
-  "name": "@birch/client",
+  "name": "@inaplight/birch-client",
   "version": "0.1.0",
   "description": "Zero-config automatic API key rotation client for Birch",
   "main": "dist/index.js",
@@ -33,6 +33,11 @@
   ],
   "author": "Birch Contributors",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/plyght/birch.git",
+    "directory": "packages/client"
+  },
   "peerDependencies": {
     "axios": "^1.0.0"
   },

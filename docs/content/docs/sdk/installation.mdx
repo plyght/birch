@@ -6,31 +6,31 @@ description: Install the Birch SDK package
 ## npm
 
 ```bash
-npm install @birch/client
+npm install @inaplight/birch-client
 ```
 
 ## Bun
 
 ```bash
-bun add @birch/client
+bun add @inaplight/birch-client
 ```
 
 ## yarn
 
 ```bash
-yarn add @birch/client
+yarn add @inaplight/birch-client
 ```
 
 ## pnpm
 
 ```bash
-pnpm add @birch/client
+pnpm add @inaplight/birch-client
 ```
 
 ## Package Information
 
-- **Package name**: `@birch/client`
-- **Version**: Check [npm](https://www.npmjs.com/package/@birch/client) for latest version
+- **Package name**: `@inaplight/birch-client`
+- **Version**: Check [npm](https://www.npmjs.com/package/@inaplight/birch-client) for latest version
 - **TypeScript**: Full TypeScript support included
 - **Node.js**: Requires Node.js 18 or higher
 
@@ -39,7 +39,7 @@ pnpm add @birch/client
 After installation, verify the package is installed correctly:
 
 ```bash
-npm list @birch/client
+npm list @inaplight/birch-client
 ```
 
 You should see the package listed with its version.
@@ -49,7 +49,7 @@ You should see the package listed with its version.
 The SDK includes full TypeScript definitions. No additional `@types` package needed.
 
 ```typescript
-import { configureBirch, daemonClient } from '@birch/client';
+import { configureBirch, daemonClient } from '@inaplight/birch-client';
 
 // All types are available
 const result: RotateResult = await daemonClient.rotate('MY_KEY');

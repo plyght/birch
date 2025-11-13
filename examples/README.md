@@ -35,7 +35,7 @@ cargo run --example app_signal_hook
 
 ## TypeScript Examples
 
-All TypeScript examples use the `@birch/client` SDK for automatic rotation.
+All TypeScript examples use the `@inaplight/birch-client` SDK for automatic rotation.
 
 ### CLI Script
 
@@ -51,7 +51,7 @@ A standalone CLI script that makes API calls with automatic rotation.
 **Setup:**
 ```bash
 cd examples/typescript/cli-script
-bun install @birch/client
+bun install @inaplight/birch-client
 ```
 
 **Run:**
@@ -62,7 +62,7 @@ bun run script.ts
 ```
 
 **What it does:**
-- Imports `@birch/client/auto` for zero-config setup
+- Imports `@inaplight/birch-client/auto` for zero-config setup
 - Makes fetch requests to TikTok and OpenAI APIs
 - Automatically rotates keys on 429 responses
 
@@ -80,7 +80,7 @@ A REST API server built with Express that automatically rotates API keys.
 **Setup:**
 ```bash
 cd examples/typescript/express-api
-bun install @birch/client express
+bun install @inaplight/birch-client express
 bun install -D @types/express
 ```
 
@@ -98,7 +98,7 @@ curl http://localhost:3000/tiktok
 ```
 
 **What it does:**
-- Imports `@birch/client/auto` at the top of the file
+- Imports `@inaplight/birch-client/auto` at the top of the file
 - Provides REST endpoints that call external APIs
 - Automatically handles rate limits and key rotation
 
@@ -116,7 +116,7 @@ A Next.js App Router application with API routes that use automatic rotation.
 **Setup:**
 ```bash
 cd examples/typescript/nextjs-app
-bun install @birch/client next react react-dom
+bun install @inaplight/birch-client next react react-dom
 ```
 
 **Create `.env.local`:**
@@ -135,7 +135,7 @@ curl http://localhost:3000/api/tiktok
 ```
 
 **What it does:**
-- Imports `@birch/client/auto` in the root layout
+- Imports `@inaplight/birch-client/auto` in the root layout
 - Provides API routes that fetch from external APIs
 - Automatically rotates keys when rate limits are hit
 
@@ -189,7 +189,7 @@ The Rust example demonstrates the manual approach:
 ### TypeScript Examples (Automatic)
 
 The TypeScript examples use the SDK for zero-config automation:
-1. Import `@birch/client/auto` at the entry point
+1. Import `@inaplight/birch-client/auto` at the entry point
 2. SDK intercepts all HTTP requests (fetch, axios, etc.)
 3. SDK detects 429 responses automatically
 4. SDK calls the daemon and retries with a new key immediately

@@ -1,4 +1,4 @@
-import '@birch/client/auto';
+import '@inaplight/birch-client/auto';
 import express from 'express';
 
 const app = express();
