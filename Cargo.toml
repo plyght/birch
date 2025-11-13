@@ -50,13 +50,11 @@ azure_core = "0.20"
 azure_security_keyvault = "0.20"
 azure_identity = "0.20"
 base64 = "0.22"
+base64ct = "=1.7.3"
 
 [dev-dependencies]
 tempfile = "3.12"
 mockito = "1.5"
-
-[patch.crates-io]
-base64ct = "=1.7.3"
 
 [profile.release]
 strip = true
