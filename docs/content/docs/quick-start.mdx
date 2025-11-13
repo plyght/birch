@@ -57,14 +57,14 @@ birch rollback MY_API_KEY --env dev
 
 For production, you'll need provider credentials. Let's rotate a Vercel secret:
 
-### 1. Set Up Credentials
+### Set Up Credentials
 
 ```bash
 export VERCEL_TOKEN="your-vercel-token"
 export VERCEL_PROJECT_ID="your-project-id"
 ```
 
-### 2. Dry Run First
+### Dry Run First
 
 Always test with `--dry-run` before making real changes:
 
@@ -72,7 +72,7 @@ Always test with `--dry-run` before making real changes:
 birch rotate MY_API_KEY --env prod --service vercel --dry-run
 ```
 
-### 3. Perform Rotation
+### Perform Rotation
 
 When you're ready:
 
@@ -82,7 +82,7 @@ birch rotate MY_API_KEY --env prod --service vercel
 
 You'll be prompted to confirm the change.
 
-### 4. Optional: Trigger Redeploy
+### Optional: Trigger Redeploy
 
 To automatically redeploy after rotation:
 
@@ -132,7 +132,7 @@ birch audit MY_API_KEY --env prod
 
 For APIs with rate limits, you can set up a pool of keys for automatic rotation:
 
-### 1. Create a Key Pool
+### Create a Key Pool
 
 ```bash
 # Create a pool with multiple keys
@@ -150,7 +150,7 @@ Or from a file:
 birch pool init TIKTOK_API_KEY --from-file ./keys.txt
 ```
 
-### 2. Check Pool Status
+### Check Pool Status
 
 ```bash
 birch pool status TIKTOK_API_KEY
@@ -160,7 +160,7 @@ birch pool status TIKTOK_API_KEY
 # Available:       3 (100%)
 ```
 
-### 3. Rotate with Pool
+### Rotate with Pool
 
 Now when you rotate, Birch will automatically use the next available key:
 
@@ -171,7 +171,7 @@ birch rotate TIKTOK_API_KEY --env prod --service vercel
 # 🔄 Rotating secret...
 ```
 
-### 4. Automatic Rotation on Rate Limits
+### Automatic Rotation on Rate Limits
 
 Your app can trigger rotation when hitting rate limits:
 
@@ -190,7 +190,7 @@ if (response.status === 429) {
 }
 ```
 
-### 5. Manage Your Pool
+### Manage Your Pool
 
 ```bash
 # View all keys and their status
@@ -203,11 +203,27 @@ birch pool add TIKTOK_API_KEY --key "sk_new_key"
 birch pool remove TIKTOK_API_KEY --index 0
 ```
 
+## Using the SDK
+
+For Node.js applications, you can use the [Birch SDK](/docs/sdk) for automatic rotation without manual daemon calls:
+
+```typescript
+import '@birch/client/auto';
+
+// Your existing API calls automatically handle rotation
+const response = await fetch('https://api.tiktok.com/v1/videos', {
+  headers: { Authorization: `Bearer ${process.env.TIKTOK_API_KEY}` }
+});
+```
+
+See the [SDK documentation](/docs/sdk) for complete setup instructions.
+
 ## Next Steps
 
 Now that you've completed your first rotation:
 
 - [Learn about configuration options](/docs/configuration)
+- [Set up the SDK](/docs/sdk) for automatic rotation in your applications
 - [Set up multiple providers](/docs/connectors)
 - [Read the operator runbook](/docs/operators/runbook)
 - [Implement app-signal rotation](/docs/usage/app-signals)

@@ -1,0 +1,342 @@
+---
+title: Framework Guides
+description: Framework-specific guides for integrating the Birch SDK
+---
+
+## Next.js
+
+### App Router
+
+Add the import to your root layout:
+
+```typescript
+// app/layout.tsx
+import '@birch/client/auto';
+
+export default function RootLayout({ children }) {
+  return <html><body>{children}</body></html>;
+}
+```
+
+Use in API routes:
+
+```typescript
+// app/api/tiktok/route.ts
+export async function GET() {
+  const response = await fetch('https://api.tiktok.com/v1/videos', {
+    headers: {
+      Authorization: `Bearer ${process.env.TIKTOK_API_KEY}`
+    }
+  });
+  
+  return Response.json(await response.json());
+}
+```
+
+### Pages Router
+
+Add the import to `_app.tsx`:
+
+```typescript
+// pages/_app.tsx
+import '@birch/client/auto';
+import type { AppProps } from 'next/app';
+
+export default function App({ Component, pageProps }: AppProps) {
+  return <Component {...pageProps} />;
+}
+```
+
+Use in API routes:
+
+```typescript
+// pages/api/tiktok.ts
+import type { NextApiRequest, NextApiResponse } from 'next';
+
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
+  const response = await fetch('https://api.tiktok.com/v1/videos', {
+    headers: {
+      Authorization: `Bearer ${process.env.TIKTOK_API_KEY}`
+    }
+  });
+  
+  res.json(await response.json());
+}
+```
+
+### Environment Variables
+
+Set up environment variables in `.env.local`:
+
+```bash
+TIKTOK_API_KEY=your-key
+BIRCH_ENV=dev
+BIRCH_DEBUG=true
+```
+
+For production, add to Vercel environment variables.
+
+## Express
+
+### Basic Setup
+
+```typescript
+// server.ts
+import '@birch/client/auto';
+import express from 'express';
+
+const app = express();
+
+app.get('/tweets', async (req, res) => {
+  const response = await fetch('https://api.twitter.com/2/tweets', {
+    headers: {
+      Authorization: `Bearer ${process.env.TWITTER_API_KEY}`
+    }
+  });
+  
+  res.json(await response.json());
+});
+
+app.listen(3000);
+```
+
+### With TypeScript
+
+```typescript
+// server.ts
+import '@birch/client/auto';
+import express, { Request, Response } from 'express';
+
+const app = express();
+
+app.get('/tweets', async (req: Request, res: Response) => {
+  try {
+    const response = await fetch('https://api.twitter.com/2/tweets', {
+      headers: {
+        Authorization: `Bearer ${process.env.TWITTER_API_KEY}`
+      }
+    });
+    
+    if (!response.ok) {
+      throw new Error(`API error: ${response.status}`);
+    }
+    
+    res.json(await response.json());
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch tweets' });
+  }
+});
+
+app.listen(3000, () => {
+  console.log('Server running on http://localhost:3000');
+});
+```
+
+## React
+
+### Client Component
+
+```typescript
+// components/ApiCaller.tsx
+'use client';
+
+import { useEffect, useState } from 'react';
+
+export function ApiCaller() {
+  const [data, setData] = useState(null);
+
+  useEffect(() => {
+    async function fetchData() {
+      const response = await fetch('/api/tiktok');
+      setData(await response.json());
+    }
+    
+    fetchData();
+  }, []);
+
+  return <div>{JSON.stringify(data)}</div>;
+}
+```
+
+Note: The SDK import should be in your server-side entry point, not in client components.
+
+## Remix
+
+### Root Component
+
+```typescript
+// app/root.tsx
+import '@birch/client/auto';
+import { Links, Meta, Outlet } from '@remix-run/react';
+
+export default function App() {
+  return (
+    <html>
+      <head>
+        <Meta />
+        <Links />
+      </head>
+      <body>
+        <Outlet />
+      </body>
+    </html>
+  );
+}
+```
+
+### Loader
+
+```typescript
+// app/routes/tiktok.tsx
+import { json, type LoaderFunctionArgs } from '@remix-run/node';
+
+export async function loader({ request }: LoaderFunctionArgs) {
+  const response = await fetch('https://api.tiktok.com/v1/videos', {
+    headers: {
+      Authorization: `Bearer ${process.env.TIKTOK_API_KEY}`
+    }
+  });
+  
+  return json(await response.json());
+}
+```
+
+## SvelteKit
+
+### App Setup
+
+```typescript
+// src/app.d.ts
+import '@birch/client/auto';
+```
+
+### API Route
+
+```typescript
+// src/routes/api/tiktok/+server.ts
+import { json } from '@sveltejs/kit';
+import type { RequestHandler } from './$types';
+
+export const GET: RequestHandler = async () => {
+  const response = await fetch('https://api.tiktok.com/v1/videos', {
+    headers: {
+      Authorization: `Bearer ${process.env.TIKTOK_API_KEY}`
+    }
+  });
+  
+  return json(await response.json());
+};
+```
+
+## Nuxt
+
+### Plugin
+
+```typescript
+// plugins/birch.client.ts
+import '@birch/client/auto';
+```
+
+### API Route
+
+```typescript
+// server/api/tiktok.ts
+export default defineEventHandler(async (event) => {
+  const response = await fetch('https://api.tiktok.com/v1/videos', {
+    headers: {
+      Authorization: `Bearer ${process.env.TIKTOK_API_KEY}`
+    }
+  });
+  
+  return await response.json();
+});
+```
+
+## Standalone Node.js
+
+### Script
+
+```typescript
+// script.ts
+import '@birch/client/auto';
+
+async function main() {
+  const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      model: 'gpt-4',
+      messages: [{ role: 'user', content: 'Hello!' }]
+    })
+  });
+  
+  console.log(await response.json());
+}
+
+main();
+```
+
+Run with:
+
+```bash
+ts-node script.ts
+# or
+bun run script.ts
+```
+
+## Common Patterns
+
+### Environment-Specific Configuration
+
+```typescript
+import { configureBirch } from '@birch/client';
+
+if (process.env.NODE_ENV === 'production') {
+  await configureBirch({
+    environment: 'production',
+    service: 'vercel',
+    debug: false
+  });
+} else {
+  await configureBirch({
+    environment: 'dev',
+    debug: true
+  });
+}
+```
+
+### Conditional Import
+
+```typescript
+if (process.env.BIRCH_ENABLED !== 'false') {
+  await import('@birch/client/auto');
+}
+```
+
+## Troubleshooting
+
+### SDK Not Working
+
+1. Ensure the import is at the top of your entry file
+2. Check that the daemon is running: `birch daemon status`
+3. Enable debug mode: `BIRCH_DEBUG=true`
+4. Verify environment variables are set correctly
+
+### Framework-Specific Issues
+
+- **Next.js**: Ensure import is in `layout.tsx` or `_app.tsx`, not in individual pages
+- **Express**: Import before creating the Express app instance
+- **Remix**: Import in `root.tsx` or a server-side file
+
+## Next Steps
+
+- [See more examples](/docs/sdk/examples) for code patterns
+- [Read API reference](/docs/sdk/api-reference) for advanced usage
+- [Configure the SDK](/docs/sdk/configuration) for your environment
+

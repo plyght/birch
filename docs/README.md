@@ -23,6 +23,7 @@ bun run start
 Documentation content is located in `content/docs/`:
 
 - **Getting Started**: index.mdx, installation.mdx, quick-start.mdx
+- **SDK**: sdk/ folder (getting-started, installation, configuration, api-reference, examples, frameworks)
 - **Configuration**: configuration.mdx
 - **Usage**: usage.mdx and usage/ folder
 - **Operators**: operators/ folder

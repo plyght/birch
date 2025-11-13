@@ -1,0 +1,388 @@
+---
+title: App-Signal Rotation
+description: Trigger automatic secret rotation from your application
+---
+
+App-signal rotation allows your application to automatically trigger secret rotation when rate limits or other conditions are detected, without manual intervention.
+
+## Overview
+
+Instead of manually rotating secrets, your application can send a signal to the Birch daemon when it detects conditions that require rotation (like rate limits). The daemon handles the rotation asynchronously.
+
+## Prerequisites
+
+1. **Start the Birch daemon**:
+
+```bash
+birch daemon start
+```
+
+2. **Verify daemon is running**:
+
+```bash
+birch daemon status
+# or
+curl http://127.0.0.1:9123/health
+```
+
+## How It Works
+
+When your application detects a condition requiring rotation (e.g., HTTP 429 rate limit), it sends a POST request to the daemon's `/rotate` endpoint. The daemon:
+
+1. Validates the request
+2. Checks cooldown period
+3. Queues the rotation
+4. Returns immediately (rotation happens asynchronously)
+
+## Integration Examples
+
+### Node.js / Express
+
+```javascript
+const axios = require('axios');
+
+async function rotateSecretOnRateLimit(secretName) {
+  try {
+    const response = await axios.post('http://127.0.0.1:9123/rotate', {
+      secret_name: secretName,
+      env: process.env.NODE_ENV || 'prod',
+      service: 'vercel'
+    });
+    
+    console.log('Rotation queued:', response.data);
+  } catch (error) {
+    console.error('Failed to trigger rotation:', error.message);
+  }
+}
+
+app.use((err, req, res, next) => {
+  if (err.status === 429) {
+    rotateSecretOnRateLimit('MY_API_KEY');
+  }
+  next(err);
+});
+```
+
+### Python / Flask
+
+```python
+import requests
+
+def rotate_secret_on_rate_limit(secret_name: str):
+    try:
+        response = requests.post('http://127.0.0.1:9123/rotate', json={
+            'secret_name': secret_name,
+            'env': 'prod',
+            'service': 'vercel'
+        })
+        print(f"Rotation queued: {response.json()}")
+    except Exception as e:
+        print(f"Failed to trigger rotation: {e}")
+
+@app.errorhandler(429)
+def handle_rate_limit(error):
+    rotate_secret_on_rate_limit('MY_API_KEY')
+    return "Rate limit exceeded", 429
+```
+
+### Go
+
+```go
+package main
+
+import (
+    "bytes"
+    "encoding/json"
+    "net/http"
+)
+
+type RotateRequest struct {
+    SecretName string  `json:"secret_name"`
+    Env        string  `json:"env"`
+    Service    *string `json:"service,omitempty"`
+}
+
+func rotateSecretOnRateLimit(secretName string) error {
+    req := RotateRequest{
+        SecretName: secretName,
+        Env:        "prod",
+        Service:    stringPtr("vercel"),
+    }
+    
+    body, _ := json.Marshal(req)
+    _, err := http.Post(
+        "http://127.0.0.1:9123/rotate",
+        "application/json",
+        bytes.NewBuffer(body),
+    )
+    
+    return err
+}
+
+func middleware(next http.Handler) http.Handler {
+    return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+        next.ServeHTTP(w, r)
+        
+        if w.Header().Get("X-RateLimit-Remaining") == "0" {
+            go rotateSecretOnRateLimit("MY_API_KEY")
+        }
+    })
+}
+
+func stringPtr(s string) *string {
+    return &s
+}
+```
+
+### Rust
+
+```rust
+use reqwest::Client;
+use serde_json::json;
+use std::time::Duration;
+
+async fn rotate_secret_on_rate_limit(secret_name: &str) -> Result<(), Box<dyn std::error::Error>> {
+    let client = Client::builder()
+        .timeout(Duration::from_secs(5))
+        .build()?;
+
+    let response = client
+        .post("http://127.0.0.1:9123/rotate")
+        .json(&json!({
+            "secret_name": secret_name,
+            "env": "prod",
+            "service": "vercel"
+        }))
+        .send()
+        .await?;
+
+    if response.status().is_success() {
+        println!("Rotation queued successfully");
+    } else {
+        println!("Failed to queue rotation: {}", response.status());
+    }
+
+    Ok(())
+}
+```
+
+## Using the SDK
+
+For Node.js applications, use the [Birch SDK](/docs/sdk) instead of manual daemon calls:
+
+```typescript
+import '@birch/client/auto';
+
+// Automatic rotation on 429 responses
+const response = await fetch(API_URL, {
+  headers: { Authorization: `Bearer ${process.env.API_KEY}` }
+});
+```
+
+The SDK automatically handles rate limits and rotation - no manual daemon calls needed.
+
+## Request Format
+
+### Endpoint
+
+```
+POST http://127.0.0.1:9123/rotate
+Content-Type: application/json
+```
+
+### Request Body
+
+```json
+{
+  "secret_name": "MY_API_KEY",
+  "env": "prod",
+  "service": "vercel"
+}
+```
+
+**Fields:**
+- `secret_name` (string, required): Name of the secret to rotate
+- `env` (string, required): Environment (dev/staging/prod)
+- `service` (string, optional): Service name (vercel/netlify/render/etc.)
+
+## Response Format
+
+### Success (202 Accepted)
+
+```json
+{
+  "success": true,
+  "message": "Rotation queued"
+}
+```
+
+### Rate Limited (429 Too Many Requests)
+
+```json
+{
+  "success": false,
+  "message": "Cooldown active: 45s remaining"
+}
+```
+
+### Error (500 Internal Server Error)
+
+```json
+{
+  "success": false,
+  "message": "Failed to initialize audit logger: ..."
+}
+```
+
+## Best Practices
+
+### Debouncing
+
+Birch automatically debounces signals using the configured cooldown period (default: 60 seconds). Multiple rapid signals for the same secret will be ignored until the cooldown expires.
+
+### Async Handling
+
+Rotation happens asynchronously. Don't block your application waiting for rotation to complete:
+
+```javascript
+// Good: Fire and forget
+rotateSecretOnRateLimit('MY_API_KEY');
+
+// Bad: Blocking
+await rotateSecretOnRateLimit('MY_API_KEY');
+await waitForRotation(); // Don't do this
+```
+
+### Error Handling
+
+Log failures but don't crash your application:
+
+```javascript
+try {
+  await rotateSecretOnRateLimit('MY_API_KEY');
+} catch (error) {
+  console.error('Rotation signal failed:', error);
+  // Continue application execution
+}
+```
+
+### Monitoring
+
+Monitor rotation audit logs to track automatic rotations:
+
+```bash
+birch audit --last 10 | grep Signal
+```
+
+### Testing
+
+Test the signal endpoint in development before deploying:
+
+```bash
+# Start daemon
+birch daemon start
+
+# Test signal
+curl -X POST http://127.0.0.1:9123/rotate \
+  -H "Content-Type: application/json" \
+  -d '{"secret_name": "MY_API_KEY", "env": "dev"}'
+```
+
+## Common Patterns
+
+### Rate Limit Detection
+
+```javascript
+async function makeApiCall(url) {
+  const response = await fetch(url, {
+    headers: {
+      Authorization: `Bearer ${process.env.API_KEY}`
+    }
+  });
+
+  if (response.status === 429) {
+    // Trigger rotation
+    await rotateSecretOnRateLimit('API_KEY');
+    
+    // Optionally retry after delay
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    return makeApiCall(url);
+  }
+
+  return response;
+}
+```
+
+### Middleware Pattern
+
+```javascript
+// Express middleware
+app.use(async (req, res, next) => {
+  try {
+    await next();
+  } catch (error) {
+    if (error.status === 429) {
+      const secretName = detectSecretFromRequest(req);
+      rotateSecretOnRateLimit(secretName);
+    }
+    throw error;
+  }
+});
+```
+
+### Scheduled Checks
+
+```javascript
+// Check rate limit headers periodically
+setInterval(async () => {
+  const response = await fetch('https://api.example.com/status');
+  const remaining = parseInt(response.headers.get('X-RateLimit-Remaining'));
+  
+  if (remaining < 10) {
+    // Rotate proactively before hitting limit
+    rotateSecretOnRateLimit('API_KEY');
+  }
+}, 60000); // Check every minute
+```
+
+## Troubleshooting
+
+### Daemon Not Responding
+
+```bash
+# Check daemon status
+birch daemon status
+
+# Check if port is in use
+lsof -i :9123
+
+# Restart daemon
+birch daemon stop
+birch daemon start
+```
+
+### Cooldown Active
+
+If you see "Cooldown active" errors, wait for the cooldown period to expire or adjust the cooldown in your config:
+
+```toml
+# ~/.birch/config.toml
+cooldown_seconds = 30  # Reduce from default 60
+```
+
+### Secret Not Found
+
+Ensure the secret name matches exactly:
+
+```bash
+# List available secrets
+birch pool list
+```
+
+## Next Steps
+
+- [Set up key pools](/docs/usage/key-pools) for automatic rotation
+- [Use the SDK](/docs/sdk) for zero-config integration
+- [Read the operator runbook](/docs/operators/runbook) for production deployment
+- [Monitor with audit logs](/docs/cli-reference#audit) to track rotations
+
